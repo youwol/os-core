@@ -220,33 +220,30 @@ export class FavoritesFacade {
                 const filtered = actualFavorites.filter(
                     (item) => getId(target, item) != newElement.id,
                 )
-                if (filtered.length != actualFavorites.length) {
-                    const items = filtered
-                    RequestsExecutor.saveFavorites({
-                        ...others,
-                        [FavoritesFacade.toBodyName[target]]: items.map(
-                            (item) => ({
-                                id: getId(target, item),
-                            }),
-                        ),
-                    } as any).subscribe()
-                    FavoritesFacade[target].next(items)
-                    return
-                }
-                getFavoriteResponse$(target, newElement.id).subscribe(
-                    (resp) => {
-                        const items = [...actualFavorites, resp]
-                        RequestsExecutor.saveFavorites({
-                            ...others,
-                            [FavoritesFacade.toBodyName[target]]: items.map(
-                                (item) => ({
-                                    id: getId(target, item),
-                                }),
-                            ),
-                        } as any).subscribe()
-                        FavoritesFacade[target].next(items)
-                    },
-                )
+                const items$ =
+                    filtered.length != actualFavorites.length
+                        ? of(filtered)
+                        : getFavoriteResponse$(target, newElement.id).pipe(
+                              map((resp) => [...actualFavorites, resp]),
+                          )
+                items$
+                    .pipe(
+                        take(1),
+                        tap((items) => {
+                            FavoritesFacade._get$(target).next(items)
+                        }),
+                        mergeMap((items) => {
+                            return RequestsExecutor.saveFavorites({
+                                ...others,
+                                [FavoritesFacade.toBodyName[target]]: items.map(
+                                    (item) => ({
+                                        id: getId(target, item),
+                                    }),
+                                ),
+                            } as any)
+                        }),
+                    )
+                    .subscribe()
             })
     }
 }
