@@ -8,12 +8,12 @@ import {
 } from 'rxjs'
 import { RequestsExecutor } from './requests-executor'
 import { map, mergeMap, shareReplay, take, tap } from 'rxjs/operators'
-import { AssetsGateway, raiseHTTPErrors } from '@youwol/http-clients'
-import { Environment, GetGroupResponse } from './environment'
 import {
-    GetEntityResponse,
-    GetFolderResponse,
-} from '@youwol/http-clients/dist/lib/treedb-backend'
+    AssetsGateway,
+    ExplorerBackend,
+    raiseHTTPErrors,
+} from '@youwol/http-clients'
+import { getEnvironmentSingleton } from './environment'
 
 export interface Favorite {
     id: string
@@ -24,6 +24,10 @@ export interface FavoriteItem extends Favorite {
     type: string
 }
 
+type AnyFavoriteResponse =
+    | ExplorerBackend.GetFolderResponse
+    | ExplorerBackend.GetGroupResponse
+    | ExplorerBackend.GetItemResponse
 type Target = 'favoriteGroups$' | 'favoriteFolders$' | 'favoriteItems$'
 type TargetBody = 'favoriteGroups' | 'favoriteFolders' | 'favoriteItems'
 
@@ -41,13 +45,19 @@ export class FavoritesFacade {
     }
 
     static getFolders$() {
-        return FavoritesFacade._get$<GetFolderResponse>('favoriteFolders$')
+        return FavoritesFacade._get$<ExplorerBackend.GetFolderResponse>(
+            'favoriteFolders$',
+        )
     }
     static getGroups$() {
-        return FavoritesFacade._get$<GetGroupResponse>('favoriteGroups$')
+        return FavoritesFacade._get$<ExplorerBackend.GetGroupResponse>(
+            'favoriteGroups$',
+        )
     }
     static getItems$() {
-        return FavoritesFacade._get$<GetEntityResponse>('favoriteItems$')
+        return FavoritesFacade._get$<ExplorerBackend.GetItemResponse>(
+            'favoriteItems$',
+        )
     }
 
     static _get$<T>(target: Target): BehaviorSubject<T[]> {
@@ -84,22 +94,22 @@ export class FavoritesFacade {
     }
 
     static refresh(modifiedId: string) {
-        function updateIfNeeded<TResp>(
+        function updateIfNeeded(
             target: Target,
-            elements: TResp[],
-            getFunction$: () => Subject<TResp[]>,
+            elements: AnyFavoriteResponse[],
+            getFunction$: () => Subject<AnyFavoriteResponse[]>,
         ) {
             if (!elements.find((g) => getId(target, g) == modifiedId)) {
                 return
             }
-            getFavoriteResponse$<TResp>(target, modifiedId).subscribe(
-                (group) => {
-                    const filtered = elements.filter(
-                        (f) => getId(target, f) != modifiedId,
-                    )
-                    getFunction$().next(filtered.concat(group))
-                },
-            )
+            getFavoriteResponse$(target, modifiedId).subscribe((group) => {
+                const filtered = elements.filter(
+                    (f) => getId(target, f) != modifiedId,
+                )
+                getFunction$().next(
+                    filtered.concat(group as AnyFavoriteResponse),
+                )
+            })
         }
         combineLatest([
             FavoritesFacade.getGroups$(),
@@ -108,17 +118,17 @@ export class FavoritesFacade {
         ])
             .pipe(take(1))
             .subscribe(([groups, folders, items]) => {
-                updateIfNeeded<GetGroupResponse>(
+                updateIfNeeded(
                     'favoriteGroups$',
                     groups,
                     FavoritesFacade.getGroups$,
                 )
-                updateIfNeeded<GetFolderResponse>(
+                updateIfNeeded(
                     'favoriteFolders$',
                     folders,
                     FavoritesFacade.getFolders$,
                 )
-                updateIfNeeded<GetEntityResponse>(
+                updateIfNeeded(
                     'favoriteItems$',
                     items,
                     FavoritesFacade.getItems$,
@@ -258,14 +268,23 @@ function getFavoriteResponse$<T>(target: Target, id: string): Observable<T> {
     return of(undefined)
 }
 
-function getId(target: Target, item: any) {
-    if (target == 'favoriteItems$') {
-        return item.entity.itemId || this.entity.folderId
+function getId(target: Target, item: AnyFavoriteResponse) {
+    if (
+        target == 'favoriteItems$' &&
+        ExplorerBackend.isInstanceOfItemResponse(item)
+    ) {
+        return item.itemId || this.folderId
     }
-    if (target == 'favoriteFolders$') {
+    if (
+        target == 'favoriteFolders$' &&
+        ExplorerBackend.isInstanceOfFolderResponse(item)
+    ) {
         return item.folderId
     }
-    if (target == 'favoriteGroups$') {
+    if (
+        target == 'favoriteGroups$' &&
+        ExplorerBackend.isInstanceOfGroupResponse(item)
+    ) {
         return item.id
     }
 }
