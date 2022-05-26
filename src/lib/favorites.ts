@@ -1,9 +1,9 @@
 import {
+    BehaviorSubject,
     combineLatest,
     forkJoin,
     Observable,
     of,
-    ReplaySubject,
     Subject,
 } from 'rxjs'
 import { RequestsExecutor } from './requests-executor'
@@ -40,12 +40,6 @@ export class FavoritesFacade {
         favoriteItems$: 'favoriteItems',
     }
 
-    static latest: {
-        folders$: FavoriteFolder[]
-        groups$: FavoriteGroup[]
-        items$: FavoriteItem[]
-    } = { folders$: undefined, groups$: undefined, items$: undefined }
-
     static getFolders$() {
         return FavoritesFacade._get$<GetFolderResponse>('favoriteFolders$')
     }
@@ -56,33 +50,19 @@ export class FavoritesFacade {
         return FavoritesFacade._get$<GetEntityResponse>('favoriteItems$')
     }
 
-    static _get$<T>(target: Target): ReplaySubject<T[]> {
-        if (Environment[target]) {
-            return Environment[target] as unknown as ReplaySubject<T[]>
+    static _get$<T>(target: Target): BehaviorSubject<T[]> {
+        const environment = getEnvironmentSingleton()
+        if (environment[target]) {
+            return environment[target] as unknown as BehaviorSubject<T[]>
         }
+        environment[target as string] = new BehaviorSubject([])
+
         if (!FavoritesFacade.initialFavorites$) {
             FavoritesFacade.initialFavorites$ =
                 RequestsExecutor.getFavorites().pipe(
                     shareReplay({ bufferSize: 1, refCount: true }),
-                    tap(
-                        ({
-                            favoriteGroups,
-                            favoriteItems,
-                            favoriteFolders,
-                        }) => {
-                            this.latest.items$ = favoriteItems
-                            this.latest.folders$ = favoriteFolders
-                            this.latest.groups$ = favoriteGroups
-                        },
-                    ),
                 )
         }
-        Environment[target as string] = new ReplaySubject(1)
-        Environment[target as string].subscribe((items) => {
-            FavoritesFacade.latest[target] = items.map((i) => ({
-                id: getId(target, i),
-            }))
-        })
         FavoritesFacade.initialFavorites$
             .pipe(
                 map((resp) => resp[FavoritesFacade.toBodyName[target]]),
@@ -98,9 +78,9 @@ export class FavoritesFacade {
                 }),
             )
             .subscribe((favorites) => {
-                Environment[target].next(favorites)
+                environment[target].next(favorites)
             })
-        return Environment[target] as unknown as ReplaySubject<T[]>
+        return environment[target as string] as unknown as BehaviorSubject<T[]>
     }
 
     static refresh(modifiedId: string) {

@@ -1,10 +1,6 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import {
-    AssetsBackend,
-    AssetsGateway,
-    TreedbBackend,
-} from '@youwol/http-clients'
-import { ReplaySubject } from 'rxjs'
+import { AssetsGateway, ExplorerBackend } from '@youwol/http-clients'
+import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 type url = string
 // To be replaced when @youwol/os-explorer available
@@ -20,15 +16,18 @@ export class IEnvironment {
     installManifest$: ReplaySubject<Manifest>
     applicationsInfo$: ReplaySubject<ApplicationInfo[]>
     preferences$: ReplaySubject<Preferences>
-    favoriteGroups$: ReplaySubject<GetGroupResponse[]>
-    favoriteFolders$: ReplaySubject<GetFolderResponse[]>
-    favoriteItems$: ReplaySubject<GetEntityResponse[]>
+    favoriteGroups$: BehaviorSubject<ExplorerBackend.GetGroupResponse[]>
+    favoriteFolders$: BehaviorSubject<ExplorerBackend.GetFolderResponse[]>
+    favoriteItems$: BehaviorSubject<ExplorerBackend.GetEntityResponse[]>
 }
 
 export class Environment {
     static installManifest$: ReplaySubject<Manifest>
     static applicationsInfo$: ReplaySubject<ApplicationInfo[]>
     static preferences$: ReplaySubject<Preferences>
+    static favoriteGroups$: ReplaySubject<ExplorerBackend.GetGroupResponse[]>
+    static favoriteFolders$: ReplaySubject<ExplorerBackend.GetFolderResponse[]>
+    static favoriteItems$: ReplaySubject<ExplorerBackend.GetEntityResponse[]>
 }
 
 export interface CdnClient {}
