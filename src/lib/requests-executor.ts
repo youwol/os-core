@@ -6,19 +6,13 @@ import {
     HTTPError,
     send$,
     Json,
+    AssetsBackend,
 } from '@youwol/http-clients'
 
-import { delay, map, tap } from 'rxjs/operators'
-
-import { v4 as uuidv4 } from 'uuid'
+import { delay, map } from 'rxjs/operators'
 import { Favorite } from './favorites'
-import { FolderNode, ItemNode, DriveNode } from './environment'
 
 export const debugDelay = 0
-
-// to be replaced by using types declaration of @youwol/os-explorer
-//type BrowserNode = any
-//type DriveNode = any
 
 export function isLocalYouwol() {
     return window.location.hostname == 'localhost'
@@ -29,43 +23,43 @@ export class RequestsExecutor {
     static assetsGtwClient = new AssetsGateway.Client()
 
     static renameFolder(folderId: string, newName: string) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.folders.rename$(
-            folderId,
-            { name: newName },
-        )
+        return RequestsExecutor.assetsGtwClient.explorer
+            .updateFolder$({ folderId, body: { name: newName } })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static renameAsset(itemId: string, newName: string) {
-        return RequestsExecutor.assetsGtwClient.assetsDeprecated.update$(
-            itemId,
-            {
-                name: newName,
-            },
-        )
+    static renameAsset(assetId: string, newName: string) {
+        return RequestsExecutor.assetsGtwClient.assets
+            .updateAsset$({ assetId, body: { name: newName } })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static deleteItem(node: ItemNode) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.items.delete$(
-            node.explorerId,
-        )
+    static trashItem(itemId: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .trashItem$({ itemId })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static getItem(itemId: string) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.items.get$(
-            itemId,
-        )
+        return RequestsExecutor.assetsGtwClient.explorer
+            .getItem$({
+                itemId,
+            })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static deleteFolder(node: FolderNode) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.folders.delete$(
-            node.folderId,
-        )
+    static trashFolder(folderId: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .trashFolder$({
+                folderId,
+            })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static deleteDrive(node: DriveNode) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.drives.delete$(
-            node.explorerId,
-        )
+    static deleteDrive(driveId: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .deleteDrive$({ driveId })
+            .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static getUserInfo() {
@@ -73,91 +67,88 @@ export class RequestsExecutor {
     }
 
     static getDefaultDrive(groupId: string) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.groups
-            .getDefaultDrive$(groupId)
+        return RequestsExecutor.assetsGtwClient.explorer
+            .getDefaultDrive$({ groupId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static purgeDrive(driveId: string) {
-        return RequestsExecutor.assetsGtwClient.treedb
+        return RequestsExecutor.assetsGtwClient.explorer
             .purgeDrive$({ driveId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static createFolder(
-        node: DriveNode | FolderNode,
+        parentFolderId: string,
         body: { name: string; folderId: string },
     ) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.folders
-            .create$(node.explorerId, body)
-            .pipe(dispatchHTTPErrors(this.error$))
-    }
-
-    static move(target: ItemNode | FolderNode, folder: FolderNode | DriveNode) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated
-            .move$(target.explorerId, {
-                destinationFolderId: folder.explorerId,
+        return RequestsExecutor.assetsGtwClient.explorer
+            .createFolder$({
+                parentFolderId,
+                body,
             })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static borrow(
-        target: ItemNode | FolderNode,
-        folder: FolderNode | DriveNode,
-    ) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated
-            .borrowItem$(target.explorerId, {
-                destinationFolderId: folder.explorerId,
+    static move(targetId: string, destinationFolderId: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .move$({
+                body: {
+                    targetId,
+                    destinationFolderId,
+                },
+            })
+            .pipe(dispatchHTTPErrors(this.error$))
+    }
+
+    static borrow(itemId: string, destinationFolderId: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .borrow$({
+                itemId,
+                body: {
+                    destinationFolderId,
+                },
             })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static getPath(folderId: string) {
-        return new AssetsGateway.Client().treedb
+        return new AssetsGateway.Client().explorer
             .getPathFolder$({
                 folderId,
             })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static getAsset(assetId: string): Observable<AssetsGateway.Asset> {
-        return RequestsExecutor.assetsGtwClient.assetsDeprecated
-            .get$(assetId)
+    static getAsset(
+        assetId: string,
+    ): Observable<AssetsBackend.GetAssetResponse> {
+        return RequestsExecutor.assetsGtwClient.assets
+            .getAsset$({ assetId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
-    static uploadLocalAsset(assetId: string, node?: ItemNode) {
+    static uploadLocalAsset(assetId: string) {
         if (!isLocalYouwol()) {
             return of(undefined)
         }
-
-        const uid = uuidv4()
-        node && node.addStatus({ type: 'request-pending', id: uid })
 
         return send$(
             'upload',
             `${window.location.origin}/admin/environment/upload/${assetId}`,
             { method: 'POST' },
-        ).pipe(
-            dispatchHTTPErrors(this.error$),
-            delay(debugDelay),
-            tap(
-                () =>
-                    node &&
-                    node.removeStatus({ type: 'request-pending', id: uid }),
-            ),
-        )
+        ).pipe(dispatchHTTPErrors(this.error$), delay(debugDelay))
     }
 
     static getFolder(folderId: string) {
-        return RequestsExecutor.assetsGtwClient.treedb
+        return RequestsExecutor.assetsGtwClient.explorer
             .getFolder$({ folderId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static getDrivesChildren(groupId: string) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.groups
-            .queryDrives$(groupId)
+        return RequestsExecutor.assetsGtwClient.explorer
+            .queryDrives$({ groupId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
@@ -166,14 +157,14 @@ export class RequestsExecutor {
         driveId: string,
         folderId: string,
     ) {
-        return RequestsExecutor.assetsGtwClient.treedb
+        return RequestsExecutor.assetsGtwClient.explorer
             .queryChildren$({ parentId: folderId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
     static getDeletedItems(driveId: string) {
-        return RequestsExecutor.assetsGtwClient.explorerDeprecated.drives
-            .queryDeletedItems$(driveId)
+        return RequestsExecutor.assetsGtwClient.explorer
+            .queryDeleted$({ driveId })
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
