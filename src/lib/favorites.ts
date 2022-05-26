@@ -252,11 +252,11 @@ export class FavoritesFacade {
 }
 
 function getFavoriteResponse$<T>(target: Target, id: string): Observable<T> {
-    const client = new AssetsGateway.Client().treedb
+    const client = new AssetsGateway.Client().explorer
     switch (target) {
         case 'favoriteItems$':
             return client
-                .getEntity$({ entityId: id })
+                .getItem$({ itemId: id })
                 .pipe(raiseHTTPErrors()) as Observable<T>
         case 'favoriteFolders$':
             return client
