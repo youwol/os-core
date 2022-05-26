@@ -9,8 +9,8 @@ import { ChildApplicationAPI } from './platform.state'
 import {
     ApplicationDataValue,
     ApplicationInfo,
+    AssetLightDescription,
     getEnvironmentSingleton,
-    ItemNode,
     Manifest,
     OpenWithParametrization,
 } from './environment'
@@ -18,19 +18,19 @@ import {
 type TInstaller = (installer: Installer) => Promise<Installer>
 
 export function evaluateMatch(
-    node: ItemNode,
+    data: unknown,
     parametrization: OpenWithParametrization,
 ) {
     if (typeof parametrization.match == 'string') {
-        return new Function(parametrization.match)()(node)
+        return new Function(parametrization.match)()(data)
     }
     return Object.entries(parametrization.match).reduce((acc, [k, v]) => {
-        return acc && node[k] == v
+        return acc && data[k] == v
     }, true)
 }
 
 export function evaluateParameters(
-    node: ItemNode,
+    node: unknown,
     parametrization: OpenWithParametrization,
 ) {
     if (typeof parametrization.parameters == 'string') {
@@ -141,7 +141,7 @@ return install
                                     restOfPath: '.yw_metadata.json',
                                 })
                                 .pipe(
-                                    map((resp: any) => {
+                                    map((resp) => {
                                         return {
                                             ...resp,
                                             cdnPackage,
@@ -313,7 +313,7 @@ function getFlatParametrizationList(appsInfo: ApplicationInfo[]) {
         .flat()
 }
 
-export function defaultOpeningApp$<T>(assetNode: ItemNode): Observable<
+export function defaultOpeningApp$<T>(asset: AssetLightDescription): Observable<
     | {
           appInfo: ApplicationInfo
           parametrization: OpenWithParametrization
@@ -324,14 +324,14 @@ export function defaultOpeningApp$<T>(assetNode: ItemNode): Observable<
         map((appsInfo) => {
             return getFlatParametrizationList(appsInfo).find(
                 ({ appInfo, parametrization }) =>
-                    evaluateMatch(assetNode, parametrization),
+                    evaluateMatch(asset, parametrization),
             )
         }),
         shareReplay({ bufferSize: 1, refCount: true }),
     )
 }
 
-export function openingApps$<T>(assetNode: ItemNode): Observable<
+export function openingApps$<T>(asset: AssetLightDescription): Observable<
     {
         appInfo: ApplicationInfo
         parametrization: OpenWithParametrization
@@ -341,22 +341,22 @@ export function openingApps$<T>(assetNode: ItemNode): Observable<
         map((appsInfo) => {
             return getFlatParametrizationList(appsInfo).filter(
                 ({ appInfo, parametrization }) =>
-                    evaluateMatch(assetNode, parametrization),
+                    evaluateMatch(asset, parametrization),
             )
         }),
         shareReplay({ bufferSize: 1, refCount: true }),
     )
 }
 
-export function tryOpenWithDefault$(assetNode: ItemNode) {
-    return defaultOpeningApp$(assetNode).pipe(
+export function tryOpenWithDefault$(asset: AssetLightDescription) {
+    return defaultOpeningApp$(asset).pipe(
         take(1),
         mergeMap((info: { appInfo; parametrization } | undefined) => {
             return info
                 ? ChildApplicationAPI.getOsInstance().createInstance$({
                       cdnPackage: info.appInfo.cdnPackage,
                       parameters: evaluateParameters(
-                          assetNode,
+                          asset,
                           info.parametrization,
                       ),
                       focus: true,

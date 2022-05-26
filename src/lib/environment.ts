@@ -85,25 +85,34 @@ export interface Application {
 
 export type ApplicationDataValue = { [k: string]: unknown[] }
 
+export interface AssetLightDescription {
+    kind: string
+    name: string
+    assetId: string
+    rawId: string
+}
+
 export interface Manifest {
     id: string | string[]
 
     contextMenuActions?: (params: {
-        node: ItemNode | FolderNode
+        node:
+            | ExplorerBackend.GetItemResponse
+            | ExplorerBackend.GetFolderResponse
         explorer: ExplorerState
         cdnClient: CdnClient
         assetsGtwClient: AssetsGateway.AssetsGatewayClient
     }) => ContextMenuAction[]
 
     assetPreviews?: (params: {
-        asset: AssetsBackend.GetAssetResponse
+        asset: AssetLightDescription
         cdnClient: CdnClient
         assetsGtwClient: AssetsGateway.AssetsGatewayClient
         fluxView: FluxView
     }) => AssetPreview[]
 
     openWithApps?: (params: {
-        node: ItemNode | FolderNode
+        asset: AssetLightDescription
     }) => OpeningApplication[]
 
     applications?: string[]
@@ -134,52 +143,3 @@ export interface ApplicationInfo {
     }
     execution: AppExecutionInfo
 }
-
-export interface ExplorerNode {
-    explorerId: string
-    addStatus({ type, id }: { type: string; id: string })
-    removeStatus({ type, id }: { type: string; id: string })
-}
-
-export interface DriveNode extends ExplorerNode {}
-
-export interface ItemNode extends ExplorerNode {
-    groupId: string
-    driveId: string
-    assetId: string
-    rawId: string
-    name: string
-    kind: string
-    metadata: any
-    borrowed: boolean
-}
-
-export function isInstanceOfItemNode(node: unknown): node is ItemNode {
-    return (
-        (node as ItemNode).assetId != undefined &&
-        (node as ItemNode).rawId != undefined &&
-        (node as ItemNode).explorerId != undefined
-    )
-}
-
-export interface FolderNode extends ExplorerNode {
-    groupId: string
-    driveId: string
-    name: string
-    folderId: string
-    parentFolderId: string
-}
-
-export function isInstanceOfFolderNode(node: unknown): node is FolderNode {
-    return (
-        (node as FolderNode).parentFolderId != undefined &&
-        (node as FolderNode).folderId != undefined
-    )
-}
-
-export interface GetGroupResponse {
-    id: string
-    path: string
-}
-type GetFolderResponse = TreedbBackend.GetFolderResponse
-type GetEntityResponse = TreedbBackend.GetEntityResponse
