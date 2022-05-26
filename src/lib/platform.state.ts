@@ -45,7 +45,7 @@ export class ChildApplicationAPI {
 
     static getOsInstance(): IPlatformHandler {
         return (
-            parent['@youwol/os-core']?.Core.PlatformState.instance ||
+            parent['@youwol/os-core']?.PlatformState.instance ||
             new NoPlatformHandler()
         )
     }
