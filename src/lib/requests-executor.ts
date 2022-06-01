@@ -28,6 +28,12 @@ export class RequestsExecutor {
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
+    static renameItem(itemId: string, newName: string) {
+        return RequestsExecutor.assetsGtwClient.explorer
+            .updateItem$({ itemId, body: { name: newName } })
+            .pipe(dispatchHTTPErrors(this.error$))
+    }
+
     static renameAsset(assetId: string, newName: string) {
         return RequestsExecutor.assetsGtwClient.assets
             .updateAsset$({ assetId, body: { name: newName } })
