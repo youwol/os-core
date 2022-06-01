@@ -28,7 +28,7 @@ async function preferences({fluxView, cdnClient, httpClients, rxjs}) : Promise<P
         class:'text-center',
         innerText: fluxView.attr$(
             rxjs.timer(0,1000),
-            () => \`${new Date().toLocaleString()}\`
+            () => \`new Date().toLocaleString()\`
         )
     }
     return {
@@ -62,6 +62,10 @@ async function preferences({fluxView, cdnClient, httpClients, rxjs}){
             (count) => \`${new Date().toLocaleString()}\`
         )
     }
+    const {ywInstall} = await cdnClient.install({
+        modules:['@youwol/installers-youwol'],
+        aliases:{'ywInstall':'@youwol/installers-youwol'}
+    })
     return {
         cssTheme: 'not used for now',
         profile:{
@@ -71,7 +75,13 @@ async function preferences({fluxView, cdnClient, httpClients, rxjs}){
         },
         desktop:{
             backgroundView: bgViewDefault,
-            topBannerView: topBannerViewDefault
+            topBannerView: topBannerViewDefault,
+            widgets: {
+                class:'w-100 h-100',
+                children:[
+                    new ywInstall.basic.DesktopFavoritesView({class:'d-flex flex-wrap'})
+                ]
+            }
         }
     }
 }
