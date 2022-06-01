@@ -46,6 +46,7 @@ export interface Profile {
 
 export interface Desktop {
     backgroundView: VirtualDOM
+    widgets: VirtualDOM
     topBannerView: VirtualDOM
 }
 
