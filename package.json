@@ -1,6 +1,6 @@
 {
     "name": "@youwol/os-core",
-    "version": "0.0.1-wip",
+    "version": "0.0.1",
     "description": "Core part of YouWol's Operating System",
     "author": "greinisch@youwol.com",
     "keywords": [
