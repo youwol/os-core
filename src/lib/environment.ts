@@ -57,9 +57,9 @@ export interface Desktop {
 export interface ContextMenuAction {
     icon: VirtualDOM
     name: string
-    authorized: boolean
     exe: () => void | Promise<void>
     applicable: () => boolean | Promise<boolean>
+    enabled: () => boolean | Promise<boolean>
 }
 
 export interface AssetPreview {
