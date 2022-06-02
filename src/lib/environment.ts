@@ -107,6 +107,7 @@ export interface Manifest {
         explorer: ExplorerState
         cdnClient: CdnClient
         assetsGtwClient: AssetsGateway.AssetsGatewayClient
+        fluxView: FluxView
     }) => ContextMenuAction[]
 
     assetPreviews?: (params: {
