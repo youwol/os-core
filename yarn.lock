@@ -1146,20 +1146,20 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@youwol/cdn-client@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-0.1.2.tgz#40fee9276868216a8c7bdc85861eaee198138276"
-  integrity sha512-CnVWYdd69FI+q67iaLJLb2yvaDp+Wv70NQo089B56lPwAsmjdGxmhOdWuXTadYsjVAFGrhbubdyngVAN9wEPSg==
+"@youwol/cdn-client@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-0.1.3.tgz#ae1296f94d6fbc772307a3055dfcca17242c21e7"
+  integrity sha512-Af7/snvWTPErMKC+fzT9XB8dAD19FIdGZU1Ux+27twiOVZ1kvze3nT9qh0Ig6WX9+K/fvst1DFhYu7S6fZLNiQ==
 
 "@youwol/flux-view@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-0.1.1.tgz#9349e1806e60e846b137ba36d5933aff949e41c8"
   integrity sha512-s0L/SFDGNf72thhwfXe/vU5TwoQWMvbIFhsjoWV2kBIiRviCUWPJSzJpjCiF9p0HjQ2zVxSL0xs8+Cd7x3teWw==
 
-"@youwol/http-clients@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-0.1.6.tgz#1091a7168c9954d5f5c37d250a9c2fd3e341a493"
-  integrity sha512-R9Qq+/22HlxlP8Twfrpjk2Fcfp/s9xVtZrChu5rHHGpwZlF21adsZhkFfCfncWSmR4AbPUFRGgHJwAgbHq7zqQ==
+"@youwol/http-clients@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-0.1.9.tgz#9ef7a0e51ca983f22989aaea813866baf8eb6583"
+  integrity sha512-PRcV5FxObaNbBf75X/Y9OoRnN5nomPOnWImHorU4QpRMmGIWgEugRmXkduK2dFBCDnrnyGX0CFCoQkCdVLmRjQ==
 
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.5"
@@ -5343,7 +5343,7 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@^8.3.2:
+uuid@8.3.2, uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
