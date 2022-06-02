@@ -134,6 +134,14 @@ export class RequestsExecutor {
             .pipe(dispatchHTTPErrors(this.error$))
     }
 
+    static getPermissions(
+        assetId: string,
+    ): Observable<AssetsBackend.GetPermissionsResponse> {
+        return RequestsExecutor.assetsGtwClient.assets
+            .getPermissions$({ assetId })
+            .pipe(dispatchHTTPErrors(this.error$))
+    }
+
     static uploadLocalAsset(assetId: string) {
         if (!isLocalYouwol()) {
             return of(undefined)
