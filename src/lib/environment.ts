@@ -111,7 +111,8 @@ export interface Manifest {
     }) => ContextMenuAction[]
 
     assetPreviews?: (params: {
-        asset: AssetLightDescription
+        asset: AssetsBackend.GetAssetResponse
+        permissions: AssetsBackend.GetPermissionsResponse
         cdnClient: CdnClient
         assetsGtwClient: AssetsGateway.AssetsGatewayClient
         fluxView: FluxView
