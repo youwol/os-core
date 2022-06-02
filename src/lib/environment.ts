@@ -1,5 +1,9 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import { AssetsGateway, ExplorerBackend } from '@youwol/http-clients'
+import {
+    AssetsBackend,
+    AssetsGateway,
+    ExplorerBackend,
+} from '@youwol/http-clients'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 type url = string
@@ -51,7 +55,7 @@ export interface Desktop {
 }
 
 export interface ContextMenuAction {
-    icon: string
+    icon: VirtualDOM
     name: string
     authorized: boolean
     exe: () => void | Promise<void>
