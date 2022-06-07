@@ -1,4 +1,4 @@
-import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import { attr$, HTMLElement$, VirtualDOM, child$ } from '@youwol/flux-view'
 import { Observable, ReplaySubject } from 'rxjs'
 import { v4 as uuidv4 } from 'uuid'
 import { AssetsGateway, raiseHTTPErrors } from '@youwol/http-clients'
@@ -69,9 +69,11 @@ export class RunningApp implements Executable {
             .pipe(raiseHTTPErrors())
             .subscribe((appInfo) => {
                 this.appMetadata$.next(appInfo)
-                this.snippet$.next({ innerText: appInfo.displayName })
                 this.header$.next(
-                    new HeaderView({ title: appInfo.displayName }),
+                    new HeaderView({
+                        title: appInfo.displayName,
+                        snippet$: this.snippet$,
+                    }),
                 )
             })
 
@@ -111,17 +113,23 @@ export class RunningApp implements Executable {
 }
 
 class HeaderView implements VirtualDOM {
-    public readonly class = 'px-1'
-    public readonly style = {
-        fontFamily: 'serif',
-        fontSize: 'x-large',
-        fontWeight: 'bold',
-    }
+    public readonly class = 'px-1 d-flex flex-column'
     public readonly innerText: string
     public readonly title: string
-
-    constructor(params: { title: string }) {
+    public readonly children: VirtualDOM[]
+    constructor(params: { title: string; snippet$: Observable<VirtualDOM> }) {
         Object.assign(this, params)
-        this.innerText = this.title
+        this.children = [
+            child$(params.snippet$, (snippet) => snippet, {
+                untilFirst: {
+                    style: {
+                        fontFamily: 'serif',
+                        fontSize: 'x-large',
+                        fontWeight: 'bold',
+                    },
+                    innerText: this.title,
+                },
+            }),
+        ]
     }
 }
