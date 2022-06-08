@@ -69,9 +69,11 @@ export class RunningApp implements Executable {
             .pipe(raiseHTTPErrors())
             .subscribe((appInfo) => {
                 this.appMetadata$.next(appInfo)
+                this.snippet$.next({
+                    innerText: appInfo.displayName,
+                })
                 this.header$.next(
                     new HeaderView({
-                        title: appInfo.displayName,
                         snippet$: this.snippet$,
                     }),
                 )
@@ -117,19 +119,8 @@ class HeaderView implements VirtualDOM {
     public readonly innerText: string
     public readonly title: string
     public readonly children: VirtualDOM[]
-    constructor(params: { title: string; snippet$: Observable<VirtualDOM> }) {
+    constructor(params: { snippet$: Observable<VirtualDOM> }) {
         Object.assign(this, params)
-        this.children = [
-            child$(params.snippet$, (snippet) => snippet, {
-                untilFirst: {
-                    style: {
-                        fontFamily: 'serif',
-                        fontSize: 'x-large',
-                        fontWeight: 'bold',
-                    },
-                    innerText: this.title,
-                },
-            }),
-        ]
+        this.children = [child$(params.snippet$, (snippet) => snippet)]
     }
 }
