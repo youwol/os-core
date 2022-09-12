@@ -3,5 +3,5 @@ module.exports = {
     testEnvironment: 'jsdom',
     testURL: 'http://localhost:2001',
     reporters: ['default', 'jest-junit'],
-    modulePathIgnorePatterns: ['/dist', '/yw_config'],
+    modulePathIgnorePatterns: ['/dist'],
 }
