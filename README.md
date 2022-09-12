@@ -1,7 +1,9 @@
+# @youwol/os-core
+
 Core part of YouWol's Operating System.
 
 This library is part of the hybrid cloud/local ecosystem 
-[YouWol](https://platform.youwol.com/applications/@youwol/platform/latest)
+[YouWol](https://platform.youwol.com/applications/@youwol/platform/latest).
 
 ## Links
 
