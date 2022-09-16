@@ -70,7 +70,7 @@ const exportedSymbols = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.1',
+    version:'0.1.2-wip',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
