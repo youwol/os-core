@@ -5,6 +5,7 @@ import {
     ExplorerBackend,
 } from '@youwol/http-clients'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
+import { PlatformState } from './platform.state'
 
 type url = string
 // To be replaced when @youwol/os-explorer available
@@ -39,19 +40,40 @@ export type CdnClient = unknown
 export type FluxView = unknown
 
 export interface Preferences {
-    profile: Profile
     cssTheme: url
     desktop: Desktop
 }
 
-export interface Profile {
-    avatar: VirtualDOM
+export interface Corporation {
+    icon: VirtualDOM
+    widgets?:
+        | VirtualDOM[]
+        | (({
+              platformState,
+          }: {
+              platformState: PlatformState
+          }) => VirtualDOM[])
+}
+
+export interface TopBanner {
+    corporation?: Corporation
+    widgets?:
+        | VirtualDOM[]
+        | (({
+              platformState,
+          }: {
+              platformState: PlatformState
+          }) => VirtualDOM[])
 }
 
 export interface Desktop {
     backgroundView: VirtualDOM
+    topBanner?: TopBanner
     widgets: VirtualDOM
-    topBannerView: VirtualDOM
+    /**
+     * @deprecated use 'topBanner attribute'
+     */
+    topBannerView?: VirtualDOM
 }
 
 export interface ContextMenuAction {

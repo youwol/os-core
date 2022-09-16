@@ -15,18 +15,21 @@ const bgYouWol = `
 \t<rect style="fill: url(#g);" x="-700" y="-600" width="2000" height="1920"/>
 </svg>`
 
+const ywLogo = `
+<svg id='logo2bis' xmlns='http://www.w3.org/2000/svg' style='margin: auto' viewBox='0 0 109.58 121.1' width='40px' height='40px'>
+<defs><style>.cls-2{fill:#008000;}</style></defs>
+<title>logo_YouWol_white</title>
+<polygon class='cls-2' points='109.58 94.68 109.58 84.14 91.39 73.64 109.58 63.14 109.58 42.06 63.95 68.41 63.94 68.41 63.94 121.1 82.2 110.56 82.2 89.41 100.52 99.99 109.58 94.76 109.58 94.68'/>
+<polygon class='cls-2' points='54.8 52.69 9.17 26.35 27.42 15.81 45.61 26.31 45.61 5.31 54.73 0.04 54.8 0 63.86 5.23 63.86 26.39 82.18 15.81 100.43 26.35 54.8 52.7 54.8 52.69'/>
+<polygon class='cls-2' points='0.07 94.72 9.2 99.99 27.38 89.49 27.38 110.56 45.64 121.1 45.64 68.41 45.64 68.41 0.01 42.06 0.01 63.14 18.33 73.64 0 84.22 0 94.68 0.07 94.72'/>
+</svg>
+`
 // ---------------------------------------------------------------------------------------------
 // ----------------- Common javascript/typescript of preferences -------------------------------
 // ---------------------------------------------------------------------------------------------
 
 export const defaultPreferencesContent = `
-    const bgViewDefault = {
-        class: "h-100 w-100",
-        style:{
-            backgroundColor: "#ffffff"
-        },
-        innerHTML: youwolSvgIcon
-    }
+    
     const topBannerViewDefault = {
         class:'text-center',
         innerText: fluxView.attr$(
@@ -39,15 +42,33 @@ export const defaultPreferencesContent = `
         aliases:{'ywInstall':'@youwol/installers-youwol'}
     })
     return {
-        cssTheme: 'not used for now',
-        profile:{
-            avatar:{
-                class:'fas fa-user fa-2x'
-            }
-        },
+        cssTheme: 'coming soon',
         desktop:{
-            backgroundView: bgViewDefault,            
-            topBannerView: topBannerViewDefault,
+            // This defines the background
+            backgroundView: {
+                class: "h-100 w-100",
+                style:{
+                    backgroundColor: "#ffffff"
+                },
+                innerHTML: youwolSvgIcon
+            }, 
+            // This defines the top banner
+            topBanner: { 
+                // Left side icon & associated widgets
+                corporation: {
+                    icon: { innerHTML: youwolLogo },
+                    widgets:[]
+                },
+                // Custom widgets of the top-banner, here a timer displaying the current date
+                widgets: [{
+                    class:'text-center my-auto',
+                    innerText: fluxView.attr$(
+                        rxjs.timer(0,1000),
+                        () => new Date().toLocaleString()
+                    )
+                }],
+            },           
+            // Desktop's widgets
             widgets:[
                 new ywInstall.basic.DesktopFavoritesView({class:'d-flex flex-wrap'})
             ]
@@ -65,7 +86,7 @@ async function preferences({fluxView, cdnClient, httpClients, rxjs}) : Promise<P
 }
 
 const youwolSvgIcon = \`${bgYouWol}\`
-
+const youwolLogo = \`${ywLogo}\`
 return preferences
 `
 
@@ -74,11 +95,12 @@ return preferences
 // ---------------------------------------------------------------------------------------------
 
 export const defaultJsSrcSettings = `
-async function preferences({fluxView, cdnClient, httpClients, rxjs}){
+async function preferences({cdnClient, fluxView, httpClients, platformState, rxjs}){
     ${defaultPreferencesContent}
 }
 
 const youwolSvgIcon = \`${bgYouWol}\`
+const youwolLogo = \`${ywLogo}\`
 
 return preferences
 `
