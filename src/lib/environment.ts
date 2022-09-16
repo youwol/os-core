@@ -8,7 +8,7 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 type url = string
 // To be replaced when @youwol/os-explorer available
-type ExplorerState = any
+type ExplorerState = unknown
 
 export function getEnvironmentSingleton(): IEnvironment {
     return parent['@youwol/os-core'].Environment != Environment
@@ -34,9 +34,9 @@ export class Environment {
     static favoriteItems$: ReplaySubject<ExplorerBackend.GetEntityResponse[]>
 }
 
-export interface CdnClient {}
+export type CdnClient = unknown
 
-export interface FluxView {}
+export type FluxView = unknown
 
 export interface Preferences {
     profile: Profile
