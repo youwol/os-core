@@ -42,6 +42,8 @@ export function evaluateParameters(
 }
 
 export class Installer {
+    static forceDefault = false
+
     public readonly libraryManifests = new Set<string>()
     public readonly generatorManifests = new Set<TInstaller>()
     public readonly resolvedManifests = new Set<Manifest>()
@@ -81,6 +83,10 @@ return install
     }
 
     static getInstallerScript$() {
+        if (Installer.forceDefault) {
+            return of(Installer.getDefaultInstaller())
+        }
+
         return RequestsExecutor.getInstallerScript().pipe(
             map(({ jsSrc, tsSrc }) =>
                 jsSrc
@@ -100,13 +106,8 @@ return install
         getEnvironmentSingleton().installManifest$ =
             new ReplaySubject<Manifest>(1)
 
-        RequestsExecutor.getInstallerScript()
+        Installer.getInstallerScript$()
             .pipe(
-                map(({ jsSrc }) =>
-                    jsSrc
-                        ? { jsSrc }
-                        : { jsSrc: Installer.defaultInstallJsScript },
-                ),
                 mergeMap(({ jsSrc }) =>
                     from(Function(jsSrc)()(new Installer())),
                 ),

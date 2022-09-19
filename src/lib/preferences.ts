@@ -19,6 +19,8 @@ import { VirtualDOM } from '@youwol/flux-view'
 import { ChildApplicationAPI, PlatformState } from './platform.state'
 
 export class PreferencesFacade {
+    static forceDefault = false
+
     static setPreferencesScript({
         tsSrc,
         jsSrc,
@@ -53,15 +55,8 @@ export class PreferencesFacade {
             1,
         )
 
-        RequestsExecutor.getPreferencesScript()
+        PreferencesFacade.getPreferencesScript$()
             .pipe(
-                map(({ jsSrc }) =>
-                    jsSrc
-                        ? { jsSrc }
-                        : {
-                              jsSrc: defaultJsSrcSettings,
-                          },
-                ),
                 mergeMap(({ jsSrc }) =>
                     from(
                         Function(jsSrc)()({
@@ -81,6 +76,10 @@ export class PreferencesFacade {
     }
 
     static getPreferencesScript$() {
+        if (PreferencesFacade.forceDefault) {
+            return of(PreferencesFacade.getDefaultPreferences())
+        }
+
         return RequestsExecutor.getPreferencesScript().pipe(
             map(({ jsSrc, tsSrc }) =>
                 jsSrc
