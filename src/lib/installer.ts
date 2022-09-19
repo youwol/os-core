@@ -81,6 +81,12 @@ return install
                 Installer.getInstallManifest$().next(manifest)
             })
     }
+    static getDefaultInstaller() {
+        return {
+            tsSrc: Installer.defaultInstallTsScript,
+            jsSrc: Installer.defaultInstallJsScript,
+        }
+    }
 
     static getInstallerScript$() {
         if (Installer.forceDefault) {
