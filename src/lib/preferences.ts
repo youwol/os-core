@@ -94,6 +94,20 @@ export class PreferencesFacade {
     }
 }
 
+function extractWidgets(
+    widgets: Widgets,
+    args: { platformState: PlatformState },
+): VirtualDOM[] {
+    if (!widgets) {
+        return []
+    }
+    if (typeof widgets === 'function') {
+        const resolved = widgets(args)
+        return Array.isArray(resolved) ? resolved : [resolved]
+    }
+    return Array.isArray(widgets) ? widgets : [widgets]
+}
+
 export class PreferencesExtractor {
     static getTopBannerWidgets(
         preferences: Preferences,
@@ -102,28 +116,26 @@ export class PreferencesExtractor {
         if (preferences.desktop.topBannerView) {
             return [preferences.desktop.topBannerView]
         }
-        const widgets = preferences.desktop?.topBanner?.widgets
-        if (!widgets) {
-            return []
-        }
-        if (typeof widgets === 'function') {
-            return widgets({ platformState })
-        }
-        return widgets
+        return extractWidgets(preferences.desktop?.topBanner?.widgets, {
+            platformState,
+        })
+    }
+
+    static getDesktopWidgets(
+        preferences: Preferences,
+        { platformState }: { platformState: PlatformState },
+    ): VirtualDOM[] {
+        return extractWidgets(preferences.desktop?.widgets, { platformState })
     }
 
     static getCorporationWidgets(
         preferences: Preferences,
         { platformState }: { platformState: PlatformState },
     ): VirtualDOM[] {
-        const widgets = preferences.desktop?.topBanner?.corporation?.widgets
-        if (!widgets) {
-            return []
-        }
-        if (typeof widgets === 'function') {
-            return widgets({ platformState })
-        }
-        return widgets
+        return extractWidgets(
+            preferences.desktop?.topBanner?.corporation?.widgets,
+            { platformState },
+        )
     }
 
     static getCorporation(preferences: Preferences): Corporation | undefined {

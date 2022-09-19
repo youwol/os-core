@@ -39,6 +39,16 @@ export type CdnClient = unknown
 
 export type FluxView = unknown
 
+export type TArgs = {
+    platformState: PlatformState
+}
+
+export type Widgets =
+    | VirtualDOM
+    | VirtualDOM[]
+    | ((TArgs) => VirtualDOM[])
+    | ((TArgs) => VirtualDOM)
+
 export interface Preferences {
     cssTheme: url
     desktop: Desktop
@@ -46,30 +56,18 @@ export interface Preferences {
 
 export interface Corporation {
     icon: VirtualDOM
-    widgets?:
-        | VirtualDOM[]
-        | (({
-              platformState,
-          }: {
-              platformState: PlatformState
-          }) => VirtualDOM[])
+    widgets?: Widgets
 }
 
 export interface TopBanner {
     corporation?: Corporation
-    widgets?:
-        | VirtualDOM[]
-        | (({
-              platformState,
-          }: {
-              platformState: PlatformState
-          }) => VirtualDOM[])
+    widgets?: Widgets
 }
 
 export interface Desktop {
     backgroundView: VirtualDOM
     topBanner?: TopBanner
-    widgets: VirtualDOM
+    widgets: Widgets
     /**
      * @deprecated use 'topBanner attribute'
      */
