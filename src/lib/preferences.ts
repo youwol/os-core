@@ -42,8 +42,8 @@ export class PreferencesFacade {
 
     static getDefaultPreferences() {
         return {
-            ts: defaultTsSrcSettings,
-            js: defaultJsSrcSettings,
+            tsSrc: defaultTsSrcSettings,
+            jsSrc: defaultJsSrcSettings,
         }
     }
 
