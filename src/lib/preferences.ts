@@ -4,8 +4,9 @@ import {
     Corporation,
     getEnvironmentSingleton,
     Preferences,
+    Widgets,
 } from './environment'
-import { from, ReplaySubject } from 'rxjs'
+import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
 import * as cdnClient from '@youwol/cdn-client'
 import * as httpClients from '@youwol/http-clients'
@@ -28,14 +29,14 @@ export class PreferencesFacade {
         tsSrc: string
         jsSrc: string
     }) {
-        RequestsExecutor.savePreferencesScript({ tsSrc, jsSrc }).subscribe()
-        new Function(jsSrc)()({
+        return new Function(jsSrc)()({
             rxjs,
             cdnClient,
             httpClients,
             fluxView,
             platformState: ChildApplicationAPI.getOsInstance(),
         }).then((preferences: Preferences) => {
+            RequestsExecutor.savePreferencesScript({ tsSrc, jsSrc }).subscribe()
             PreferencesFacade.getPreferences$().next(preferences)
         })
     }

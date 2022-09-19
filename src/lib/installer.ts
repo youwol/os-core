@@ -74,10 +74,13 @@ return install
         tsSrc: string
         jsSrc: string
     }) {
-        RequestsExecutor.saveInstallerScript({ tsSrc, jsSrc }).subscribe()
-        new Function(jsSrc)()(new Installer())
+        return new Function(jsSrc)()(new Installer())
             .then((installer) => installer.resolve())
             .then((manifest: Manifest) => {
+                RequestsExecutor.saveInstallerScript({
+                    tsSrc,
+                    jsSrc,
+                }).subscribe()
                 Installer.getInstallManifest$().next(manifest)
             })
     }
@@ -207,12 +210,13 @@ return install
             )
         }
         // we need to install only first layer => all inner dependencies are fetched by design
-        if (depth == 0)
+        if (depth == 0) {
             await install({
                 modules: [...this.libraryManifests].map(
                     (path) => path.split('.')[0],
                 ),
             })
+        }
 
         const generatorsFromLibs = await Promise.all(
             [...this.libraryManifests].map((libraryPath) => {
