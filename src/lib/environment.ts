@@ -3,13 +3,37 @@ import {
     AssetsBackend,
     AssetsGateway,
     ExplorerBackend,
+    RequestEvent,
 } from '@youwol/http-clients'
-import { BehaviorSubject, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { PlatformState } from './platform.state'
 
 type url = string
-// To be replaced when @youwol/os-explorer available
-type ExplorerState = unknown
+
+/**
+ * Those are the 'light' versions of the structures related to @youwol/os-explorer, a temporary workaround solution
+ * instead using 'any'.
+ *
+ * Not sure about the best solution to use here.
+ */
+export interface ExplorerState {
+    newAsset({
+        parentNode,
+        response$,
+        pendingName,
+    }: {
+        parentNode:
+            | ExplorerBackend.GetItemResponse
+            | ExplorerBackend.GetFolderResponse
+        response$: Observable<unknown>
+        progress$?: Observable<RequestEvent>
+        pendingName: string
+    })
+}
+
+/**
+ * End of light versions
+ */
 
 export function getEnvironmentSingleton(): IEnvironment {
     return parent['@youwol/os-core'].Environment != Environment
