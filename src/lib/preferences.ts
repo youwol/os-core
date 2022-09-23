@@ -1,7 +1,12 @@
 import { RequestsExecutor } from './requests-executor'
 
-import { getEnvironmentSingleton, Preferences } from './environment'
-import { from, ReplaySubject } from 'rxjs'
+import {
+    Corporation,
+    getEnvironmentSingleton,
+    Preferences,
+    Widgets,
+} from './environment'
+import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
 import * as cdnClient from '@youwol/cdn-client'
 import * as httpClients from '@youwol/http-clients'
@@ -11,8 +16,12 @@ import {
     defaultJsSrcSettings,
     defaultTsSrcSettings,
 } from './preferences-default-codes'
+import { VirtualDOM } from '@youwol/flux-view'
+import { ChildApplicationAPI, PlatformState } from './platform.state'
 
 export class PreferencesFacade {
+    static forceDefault = false
+
     static setPreferencesScript({
         tsSrc,
         jsSrc,
@@ -20,12 +29,23 @@ export class PreferencesFacade {
         tsSrc: string
         jsSrc: string
     }) {
-        RequestsExecutor.savePreferencesScript({ tsSrc, jsSrc }).subscribe()
-        new Function(jsSrc)()({ rxjs, cdnClient, httpClients, fluxView }).then(
-            (preferences: Preferences) => {
-                PreferencesFacade.getPreferences$().next(preferences)
-            },
-        )
+        return new Function(jsSrc)()({
+            rxjs,
+            cdnClient,
+            httpClients,
+            fluxView,
+            platformState: ChildApplicationAPI.getOsInstance(),
+        }).then((preferences: Preferences) => {
+            RequestsExecutor.savePreferencesScript({ tsSrc, jsSrc }).subscribe()
+            PreferencesFacade.getPreferences$().next(preferences)
+        })
+    }
+
+    static getDefaultPreferences() {
+        return {
+            tsSrc: defaultTsSrcSettings,
+            jsSrc: defaultJsSrcSettings,
+        }
     }
 
     static getPreferences$() {
@@ -36,15 +56,8 @@ export class PreferencesFacade {
             1,
         )
 
-        RequestsExecutor.getPreferencesScript()
+        PreferencesFacade.getPreferencesScript$()
             .pipe(
-                map(({ jsSrc }) =>
-                    jsSrc
-                        ? { jsSrc }
-                        : {
-                              jsSrc: defaultJsSrcSettings,
-                          },
-                ),
                 mergeMap(({ jsSrc }) =>
                     from(
                         Function(jsSrc)()({
@@ -52,6 +65,7 @@ export class PreferencesFacade {
                             cdnClient,
                             httpClients,
                             fluxView,
+                            platformState: ChildApplicationAPI.getOsInstance(),
                         }),
                     ),
                 ),
@@ -63,6 +77,10 @@ export class PreferencesFacade {
     }
 
     static getPreferencesScript$() {
+        if (PreferencesFacade.forceDefault) {
+            return of(PreferencesFacade.getDefaultPreferences())
+        }
+
         return RequestsExecutor.getPreferencesScript().pipe(
             map(({ jsSrc, tsSrc }) =>
                 jsSrc
@@ -73,5 +91,54 @@ export class PreferencesFacade {
                       },
             ),
         )
+    }
+}
+
+function extractWidgets(
+    widgets: Widgets,
+    args: { platformState: PlatformState },
+): VirtualDOM[] {
+    if (!widgets) {
+        return []
+    }
+    if (typeof widgets === 'function') {
+        const resolved = widgets(args)
+        return Array.isArray(resolved) ? resolved : [resolved]
+    }
+    return Array.isArray(widgets) ? widgets : [widgets]
+}
+
+export class PreferencesExtractor {
+    static getTopBannerWidgets(
+        preferences: Preferences,
+        { platformState }: { platformState: PlatformState },
+    ): VirtualDOM[] {
+        if (preferences.desktop.topBannerView) {
+            return [preferences.desktop.topBannerView]
+        }
+        return extractWidgets(preferences.desktop?.topBanner?.widgets, {
+            platformState,
+        })
+    }
+
+    static getDesktopWidgets(
+        preferences: Preferences,
+        { platformState }: { platformState: PlatformState },
+    ): VirtualDOM[] {
+        return extractWidgets(preferences.desktop?.widgets, { platformState })
+    }
+
+    static getCorporationWidgets(
+        preferences: Preferences,
+        { platformState }: { platformState: PlatformState },
+    ): VirtualDOM[] {
+        return extractWidgets(
+            preferences.desktop?.topBanner?.corporation?.widgets,
+            { platformState },
+        )
+    }
+
+    static getCorporation(preferences: Preferences): Corporation | undefined {
+        return preferences.desktop.topBanner?.corporation
     }
 }

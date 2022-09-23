@@ -3,12 +3,37 @@ import {
     AssetsBackend,
     AssetsGateway,
     ExplorerBackend,
+    RequestEvent,
 } from '@youwol/http-clients'
-import { BehaviorSubject, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
+import { PlatformState } from './platform.state'
 
 type url = string
-// To be replaced when @youwol/os-explorer available
-type ExplorerState = any
+
+/**
+ * Those are the 'light' versions of the structures related to @youwol/os-explorer, a temporary workaround solution
+ * instead using 'any'.
+ *
+ * Not sure about the best solution to use here.
+ */
+export interface ExplorerState {
+    newAsset({
+        parentNode,
+        response$,
+        pendingName,
+    }: {
+        parentNode:
+            | ExplorerBackend.GetItemResponse
+            | ExplorerBackend.GetFolderResponse
+        response$: Observable<unknown>
+        progress$?: Observable<RequestEvent>
+        pendingName: string
+    })
+}
+
+/**
+ * End of light versions
+ */
 
 export function getEnvironmentSingleton(): IEnvironment {
     return parent['@youwol/os-core'].Environment != Environment
@@ -34,24 +59,43 @@ export class Environment {
     static favoriteItems$: ReplaySubject<ExplorerBackend.GetEntityResponse[]>
 }
 
-export interface CdnClient {}
+export type CdnClient = unknown
 
-export interface FluxView {}
+export type FluxView = unknown
+
+export type TArgs = {
+    platformState: PlatformState
+}
+
+export type Widgets =
+    | VirtualDOM
+    | VirtualDOM[]
+    | ((TArgs) => VirtualDOM[])
+    | ((TArgs) => VirtualDOM)
 
 export interface Preferences {
-    profile: Profile
     cssTheme: url
     desktop: Desktop
 }
 
-export interface Profile {
-    avatar: VirtualDOM
+export interface Corporation {
+    icon: VirtualDOM
+    widgets?: Widgets
+}
+
+export interface TopBanner {
+    corporation?: Corporation
+    widgets?: Widgets
 }
 
 export interface Desktop {
     backgroundView: VirtualDOM
-    widgets: VirtualDOM
-    topBannerView: VirtualDOM
+    topBanner?: TopBanner
+    widgets: Widgets
+    /**
+     * @deprecated use 'topBanner attribute'
+     */
+    topBannerView?: VirtualDOM
 }
 
 export interface ContextMenuAction {

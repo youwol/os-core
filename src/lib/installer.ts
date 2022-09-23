@@ -42,6 +42,8 @@ export function evaluateParameters(
 }
 
 export class Installer {
+    static forceDefault = false
+
     public readonly libraryManifests = new Set<string>()
     public readonly generatorManifests = new Set<TInstaller>()
     public readonly resolvedManifests = new Set<Manifest>()
@@ -72,15 +74,28 @@ return install
         tsSrc: string
         jsSrc: string
     }) {
-        RequestsExecutor.saveInstallerScript({ tsSrc, jsSrc }).subscribe()
-        new Function(jsSrc)()(new Installer())
+        return new Function(jsSrc)()(new Installer())
             .then((installer) => installer.resolve())
             .then((manifest: Manifest) => {
+                RequestsExecutor.saveInstallerScript({
+                    tsSrc,
+                    jsSrc,
+                }).subscribe()
                 Installer.getInstallManifest$().next(manifest)
             })
     }
+    static getDefaultInstaller() {
+        return {
+            tsSrc: Installer.defaultInstallTsScript,
+            jsSrc: Installer.defaultInstallJsScript,
+        }
+    }
 
     static getInstallerScript$() {
+        if (Installer.forceDefault) {
+            return of(Installer.getDefaultInstaller())
+        }
+
         return RequestsExecutor.getInstallerScript().pipe(
             map(({ jsSrc, tsSrc }) =>
                 jsSrc
@@ -100,13 +115,8 @@ return install
         getEnvironmentSingleton().installManifest$ =
             new ReplaySubject<Manifest>(1)
 
-        RequestsExecutor.getInstallerScript()
+        Installer.getInstallerScript$()
             .pipe(
-                map(({ jsSrc }) =>
-                    jsSrc
-                        ? { jsSrc }
-                        : { jsSrc: Installer.defaultInstallJsScript },
-                ),
                 mergeMap(({ jsSrc }) =>
                     from(Function(jsSrc)()(new Installer())),
                 ),
@@ -200,12 +210,13 @@ return install
             )
         }
         // we need to install only first layer => all inner dependencies are fetched by design
-        if (depth == 0)
+        if (depth == 0) {
             await install({
                 modules: [...this.libraryManifests].map(
                     (path) => path.split('.')[0],
                 ),
             })
+        }
 
         const generatorsFromLibs = await Promise.all(
             [...this.libraryManifests].map((libraryPath) => {

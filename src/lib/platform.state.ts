@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs'
 import { filter, map, take, tap } from 'rxjs/operators'
 import { PlatformEvent } from './platform.events'
 import { RunningApp } from './running-app.view'
+import { PreferencesFacade } from './preferences'
+import { Installer } from './installer'
 
 export function getExeUrl(exe: { cdnPackage; version; parameters }) {
     const base = `/applications/${exe.cdnPackage}/${exe.version}`
@@ -113,6 +115,10 @@ export class PlatformState implements IPlatformHandler {
 
     static instance: PlatformState
 
+    static setSafeMode() {
+        PreferencesFacade.forceDefault = true
+        Installer.forceDefault = true
+    }
     static setOsInstance(instance: PlatformState) {
         PlatformState.instance = instance
     }
