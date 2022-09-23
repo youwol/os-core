@@ -88,7 +88,7 @@ const entries = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.2-wip',
+    version:'0.1.2',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
@@ -123,7 +123,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.2-wip~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.1.2~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
