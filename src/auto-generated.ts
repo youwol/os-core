@@ -1,14 +1,13 @@
 
 const runTimeDependencies = {
-    "load": {
+    "externals": {
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/http-clients": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "rxjs": "^6.5.5",
         "uuid": "^8.3.2"
     },
-    "differed": {},
-    "includedInBundle": []
+    "includedInBundle": {}
 }
 const externals = {
     "@youwol/cdn-client": {
@@ -67,6 +66,25 @@ const exportedSymbols = {
         "exportedSymbol": "uuid"
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const mainEntry : Object = {
+    "entryFile": "./lib/index.ts",
+    "loadDependencies": [
+        "@youwol/cdn-client",
+        "@youwol/http-clients",
+        "@youwol/flux-view",
+        "rxjs",
+        "uuid"
+    ]
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const secondaryEntries : Object = {}
+const entries = {
+     '@youwol/os-core': './lib/index.ts',
+    ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/os-core/${e.name}`]:e.entryFile}), {})
+}
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
@@ -80,7 +98,46 @@ export const setup = {
     runTimeDependencies,
     externals,
     exportedSymbols,
+    entries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
+    },
+
+    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+        const parameters = installParameters || {}
+        const scripts = parameters.scripts || []
+        const modules = [
+            ...(parameters.modules || []),
+            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/os-core_APIv01`]
+        })
+    },
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+        const entry = secondaryEntries[name]
+        const parameters = installParameters || {}
+        const scripts = [
+            ...(parameters.scripts || []),
+            `@youwol/os-core#0.1.2-wip~dist/@youwol/os-core/${entry.name}.js`
+        ]
+        const modules = [
+            ...(parameters.modules || []),
+            ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/os-core/${entry.name}_APIv01`]
+        })
     }
 }
