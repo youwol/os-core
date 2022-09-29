@@ -16,8 +16,8 @@ const bgYouWol = `
 </svg>`
 
 const ywLogo = `
-<svg id='logo2bis' xmlns='http://www.w3.org/2000/svg' style='margin: auto' viewBox='0 0 109.58 121.1' width='40px' height='40px'>
-<defs><style>.cls-2{fill:#008000;}</style></defs>
+<svg id='logo2bis' xmlns='http://www.w3.org/2000/svg' style='margin: auto' viewBox='0 0 109.58 121.1' width='25px' height='25px'>
+<defs><style>.cls-2{fill:white;}</style></defs>
 <title>logo_YouWol_white</title>
 <polygon class='cls-2' points='109.58 94.68 109.58 84.14 91.39 73.64 109.58 63.14 109.58 42.06 63.95 68.41 63.94 68.41 63.94 121.1 82.2 110.56 82.2 89.41 100.52 99.99 109.58 94.76 109.58 94.68'/>
 <polygon class='cls-2' points='54.8 52.69 9.17 26.35 27.42 15.81 45.61 26.31 45.61 5.31 54.73 0.04 54.8 0 63.86 5.23 63.86 26.39 82.18 15.81 100.43 26.35 54.8 52.7 54.8 52.69'/>
@@ -56,7 +56,10 @@ export const defaultPreferencesContent = `
             topBanner: { 
                 // Left side icon & associated widgets
                 corporation: {
-                    icon: { innerHTML: youwolLogo },
+                    icon: { 
+                        class:'h-100 d-flex flex-column justify-content-center',
+                        innerHTML: youwolLogo 
+                    },
                     widgets:[]
                 },
                 // Custom widgets of the top-banner, here a timer displaying the current date
