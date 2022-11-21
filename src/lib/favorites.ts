@@ -18,8 +18,8 @@ import { getEnvironmentSingleton } from './environment'
 export interface Favorite {
     id: string
 }
-export interface FavoriteGroup extends Favorite {}
-export interface FavoriteFolder extends Favorite {}
+export type FavoriteGroup = Favorite
+export type FavoriteFolder = Favorite
 export interface FavoriteItem extends Favorite {
     type: string
 }
@@ -82,7 +82,7 @@ export class FavoritesFacade {
                     }
                     return forkJoin(
                         items.map((item: Favorite) =>
-                            getFavoriteResponse$(target, item.id),
+                            getFavoriteResponse$<T>(target, item.id),
                         ),
                     )
                 }),
