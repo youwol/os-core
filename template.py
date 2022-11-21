@@ -31,7 +31,7 @@ template = Template(
     ),
     bundles=Bundles(
         mainModule=MainModule(
-            entryFile='./lib/index.ts',
+            entryFile='./index.ts',
             loadDependencies=["@youwol/cdn-client", "@youwol/http-clients", "@youwol/flux-view", "rxjs", "uuid"]
         )
     ),

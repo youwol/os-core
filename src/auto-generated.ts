@@ -69,7 +69,7 @@ const exportedSymbols = {
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
 const mainEntry : Object = {
-    "entryFile": "./lib/index.ts",
+    "entryFile": "./index.ts",
     "loadDependencies": [
         "@youwol/cdn-client",
         "@youwol/http-clients",
@@ -82,7 +82,7 @@ const mainEntry : Object = {
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
 const secondaryEntries : Object = {}
 const entries = {
-     '@youwol/os-core': './lib/index.ts',
+     '@youwol/os-core': './index.ts',
     ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/os-core/${e.name}`]:e.entryFile}), {})
 }
 export const setup = {
