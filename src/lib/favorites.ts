@@ -240,7 +240,11 @@ export class FavoritesFacade {
                                         id: getId(target, item),
                                     }),
                                 ),
-                            } as any)
+                            } as {
+                                favoriteGroups: Favorite[]
+                                favoriteFolders: Favorite[]
+                                favoriteItems: Favorite[]
+                            })
                         }),
                     )
                     .subscribe()
