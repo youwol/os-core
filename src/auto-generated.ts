@@ -69,7 +69,7 @@ const exportedSymbols = {
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
 const mainEntry : Object = {
-    "entryFile": "./lib/index.ts",
+    "entryFile": "./index.ts",
     "loadDependencies": [
         "@youwol/cdn-client",
         "@youwol/http-clients",
@@ -82,13 +82,13 @@ const mainEntry : Object = {
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
 const secondaryEntries : Object = {}
 const entries = {
-     '@youwol/os-core': './lib/index.ts',
+     '@youwol/os-core': './index.ts',
     ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/os-core/${e.name}`]:e.entryFile}), {})
 }
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.2',
+    version:'0.1.3',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
@@ -123,7 +123,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.2~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.1.3~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
