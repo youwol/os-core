@@ -188,6 +188,10 @@ export class PlatformState implements IPlatformHandler {
         const app = this.runningApplications$
             .getValue()
             .find((candidate) => candidate.instanceId === appId)
+        if (!app) {
+            // Happens when e.g. adding an app using an iframe element
+            return
+        }
         app.topBannerActions$.next(actionsView)
         app.topBannerUserMenu$.next(userMenuView)
         app.topBannerYouwolMenu$.next(youwolMenuView)
