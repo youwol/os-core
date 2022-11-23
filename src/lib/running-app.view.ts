@@ -86,7 +86,7 @@ export class RunningApp implements Executable {
             (acc, [k, v]) => `${acc}&${k}=${v}`,
             '',
         )
-        this.url = `/applications/${this.cdnPackage}/${this.version}?instance-id=${this.instanceId}&${queryParams}`
+        this.url = `/applications/${this.cdnPackage}/${this.version}?instance-id=${this.instanceId}${queryParams}`
 
         this.view = this.createView()
     }
