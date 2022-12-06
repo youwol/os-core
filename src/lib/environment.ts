@@ -3,8 +3,8 @@ import {
     AssetsBackend,
     AssetsGateway,
     ExplorerBackend,
-    RequestEvent,
 } from '@youwol/http-clients'
+import { RequestEvent } from '@youwol/http-primitives'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { PlatformState } from './platform.state'
 
