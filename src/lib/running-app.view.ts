@@ -1,7 +1,8 @@
 import { attr$, HTMLElement$, VirtualDOM, child$ } from '@youwol/flux-view'
 import { Observable, ReplaySubject } from 'rxjs'
 import { v4 as uuidv4 } from 'uuid'
-import { AssetsGateway, raiseHTTPErrors } from '@youwol/http-clients'
+import { AssetsGateway } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { PlatformState } from './platform.state'
 import { ApplicationInfo } from './environment'
 

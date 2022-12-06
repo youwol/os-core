@@ -8,11 +8,8 @@ import {
 } from 'rxjs'
 import { RequestsExecutor } from './requests-executor'
 import { map, mergeMap, shareReplay, take, tap } from 'rxjs/operators'
-import {
-    AssetsGateway,
-    ExplorerBackend,
-    raiseHTTPErrors,
-} from '@youwol/http-clients'
+import { AssetsGateway, ExplorerBackend } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { getEnvironmentSingleton } from './environment'
 
 export interface Favorite {

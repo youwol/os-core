@@ -2,13 +2,15 @@ import { Observable, of, Subject } from 'rxjs'
 import {
     AssetsGateway,
     CdnSessionsStorage,
+    AssetsBackend,
+} from '@youwol/http-clients'
+
+import {
     dispatchHTTPErrors,
     HTTPError,
     send$,
     Json,
-    AssetsBackend,
-} from '@youwol/http-clients'
-
+} from '@youwol/http-primitives'
 import { delay, map } from 'rxjs/operators'
 import { Favorite } from './favorites'
 

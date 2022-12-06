@@ -1,8 +1,9 @@
 
 const runTimeDependencies = {
     "externals": {
+        "@youwol/http-primitives": "^0.1.2",
         "@youwol/cdn-client": "^1.0.2",
-        "@youwol/http-clients": "^1.0.2",
+        "@youwol/http-clients": "^2.0.1",
         "@youwol/flux-view": "^1.0.3",
         "rxjs": "^6.5.5",
         "uuid": "^8.3.2"
@@ -10,6 +11,11 @@ const runTimeDependencies = {
     "includedInBundle": {}
 }
 const externals = {
+    "@youwol/http-primitives": {
+        "commonjs": "@youwol/http-primitives",
+        "commonjs2": "@youwol/http-primitives",
+        "root": "@youwol/http-primitives_APIv01"
+    },
     "@youwol/cdn-client": {
         "commonjs": "@youwol/cdn-client",
         "commonjs2": "@youwol/cdn-client",
@@ -18,7 +24,7 @@ const externals = {
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
         "commonjs2": "@youwol/http-clients",
-        "root": "@youwol/http-clients_APIv1"
+        "root": "@youwol/http-clients_APIv2"
     },
     "@youwol/flux-view": {
         "commonjs": "@youwol/flux-view",
@@ -45,12 +51,16 @@ const externals = {
     }
 }
 const exportedSymbols = {
+    "@youwol/http-primitives": {
+        "apiKey": "01",
+        "exportedSymbol": "@youwol/http-primitives"
+    },
     "@youwol/cdn-client": {
         "apiKey": "1",
         "exportedSymbol": "@youwol/cdn-client"
     },
     "@youwol/http-clients": {
-        "apiKey": "1",
+        "apiKey": "2",
         "exportedSymbol": "@youwol/http-clients"
     },
     "@youwol/flux-view": {
@@ -88,7 +98,7 @@ const entries = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.4',
+    version:'0.1.5',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
@@ -123,7 +133,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.4~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.1.5~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

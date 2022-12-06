@@ -1,7 +1,7 @@
 {
     "name": "@youwol/os-core",
     "description": "Core part of YouWol's Operating System.",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/os-core#README.md",
     "main": "dist/@youwol/os-core.js",
@@ -10,7 +10,7 @@
         "clean": "del-cli dist",
         "auto-gen": "python template.py",
         "build": "yarn build:dev",
-        "pre-build": "yarn clean && yarn auto-gen",
+        "pre-build": "yarn clean",
         "build:dev": "yarn pre-build && webpack --mode development",
         "build:prod": "yarn pre-build && webpack --mode production",
         "lint-check": "yarn lint-prettier-check && yarn lint-eslint-check",
@@ -42,7 +42,7 @@
         "del-cli": "^5.0.0",
         "@youwol/prettier-config": "^0.0.2",
         "@youwol/eslint-config": "^0.0.2",
-        "@youwol/tsconfig": "^0.0.1",
+        "@youwol/tsconfig": "^0.0.2",
         "prettier": "^2.7.1",
         "prettier-plugin-properties": "^0.2.0",
         "@typescript-eslint/eslint-plugin": "^5.33.1",
@@ -62,8 +62,9 @@
         ]
     },
     "dependencies": {
+        "@youwol/http-primitives": "^0.1.2",
         "@youwol/cdn-client": "^1.0.2",
-        "@youwol/http-clients": "^1.0.2",
+        "@youwol/http-clients": "^2.0.1",
         "@youwol/flux-view": "^1.0.3",
         "rxjs": "^6.5.5",
         "uuid": "^8.3.2"
@@ -71,7 +72,7 @@
     "youwol": {
         "cdnDependencies": {
             "@youwol/cdn-client": "^1.0.2",
-            "@youwol/http-clients": "^1.0.2",
+            "@youwol/http-clients": "^2.0.1",
             "@youwol/flux-view": "^1.0.3",
             "rxjs": "^6.5.5",
             "uuid": "^8.3.2"
