@@ -324,7 +324,7 @@ function getFlatParametrizationList(appsInfo: ApplicationInfo[]) {
         .flat()
 }
 
-export function defaultOpeningApp$<T>(asset: AssetLightDescription): Observable<
+export function defaultOpeningApp$<_T>(asset: AssetLightDescription): Observable<
     | {
           appInfo: ApplicationInfo
           parametrization: OpenWithParametrization
@@ -334,7 +334,7 @@ export function defaultOpeningApp$<T>(asset: AssetLightDescription): Observable<
     return Installer.getApplicationsInfo$().pipe(
         map((appsInfo) => {
             return getFlatParametrizationList(appsInfo).find(
-                ({ appInfo, parametrization }) =>
+                ({ parametrization }) =>
                     evaluateMatch(asset, parametrization),
             )
         }),
@@ -342,7 +342,7 @@ export function defaultOpeningApp$<T>(asset: AssetLightDescription): Observable<
     )
 }
 
-export function openingApps$<T>(asset: AssetLightDescription): Observable<
+export function openingApps$<_T>(asset: AssetLightDescription): Observable<
     {
         appInfo: ApplicationInfo
         parametrization: OpenWithParametrization
@@ -351,7 +351,7 @@ export function openingApps$<T>(asset: AssetLightDescription): Observable<
     return Installer.getApplicationsInfo$().pipe(
         map((appsInfo) => {
             return getFlatParametrizationList(appsInfo).filter(
-                ({ appInfo, parametrization }) =>
+                ({  parametrization }) =>
                     evaluateMatch(asset, parametrization),
             )
         }),
