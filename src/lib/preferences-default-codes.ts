@@ -37,9 +37,11 @@ export const defaultPreferencesContent = `
             () => new Date().toLocaleString()
         )
     }
-    const {ywInstall} = await cdnClient.install({
-        modules:['@youwol/installers-youwol'],
-        aliases:{'ywInstall':'@youwol/installers-youwol'}
+    const {ywInstall, desktopApp} = await cdnClient.install({
+        modules:['@youwol/welcome-desktop-widget'],
+        aliases:{
+            'desktopApp': '@youwol/welcome-desktop-widget'
+        }
     })
     return {
         cssTheme: 'coming soon',
@@ -73,7 +75,7 @@ export const defaultPreferencesContent = `
             },           
             // Desktop's widgets
             widgets:[
-                new ywInstall.basic.DesktopFavoritesView({class:'d-flex flex-wrap'})
+                new desktopApp.MainView({platformState})
             ]
         }
     }`
@@ -84,7 +86,7 @@ export const defaultPreferencesContent = `
 export const defaultTsSrcSettings = `
 import {Preferences} from './environment'
 
-async function preferences({fluxView, cdnClient, httpClients, rxjs}) : Promise<Preferences> {
+async function preferences({fluxView, cdnClient, httpClients, rxjs, platformState}) : Promise<Preferences> {
     ${defaultPreferencesContent}
 }
 
