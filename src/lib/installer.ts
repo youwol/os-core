@@ -10,6 +10,7 @@ import {
     ApplicationDataValue,
     ApplicationInfo,
     AssetLightDescription,
+    Environment,
     getEnvironmentSingleton,
     Manifest,
     OpenWithParametrization,
@@ -109,11 +110,10 @@ return install
     }
 
     static getInstallManifest$() {
-        if (getEnvironmentSingleton().installManifest$) {
-            return getEnvironmentSingleton().installManifest$
+        if (Environment.installManifest$) {
+            return Environment.installManifest$
         }
-        getEnvironmentSingleton().installManifest$ =
-            new ReplaySubject<Manifest>(1)
+        Environment.installManifest$ = new ReplaySubject<Manifest>(1)
 
         Installer.getInstallerScript$()
             .pipe(
@@ -123,9 +123,9 @@ return install
                 mergeMap((installer: Installer) => from(installer.resolve())),
             )
             .subscribe((manifest: Manifest) => {
-                getEnvironmentSingleton().installManifest$.next(manifest)
+                Environment.installManifest$.next(manifest)
             })
-        return getEnvironmentSingleton().installManifest$
+        return Environment.installManifest$
     }
 
     static getApplicationsInfo$() {
