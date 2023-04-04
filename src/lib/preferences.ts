@@ -1,11 +1,6 @@
 import { RequestsExecutor } from './requests-executor'
 
-import {
-    Corporation,
-    getEnvironmentSingleton,
-    Preferences,
-    Widgets,
-} from './environment'
+import { Corporation, Environment, Preferences, Widgets } from './environment'
 import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
 import * as cdnClient from '@youwol/cdn-client'
@@ -49,12 +44,10 @@ export class PreferencesFacade {
     }
 
     static getPreferences$() {
-        if (getEnvironmentSingleton().preferences$) {
-            return getEnvironmentSingleton().preferences$
+        if (Environment.preferences$) {
+            return Environment.preferences$
         }
-        getEnvironmentSingleton().preferences$ = new ReplaySubject<Preferences>(
-            1,
-        )
+        Environment.preferences$ = new ReplaySubject<Preferences>(1)
 
         PreferencesFacade.getPreferencesScript$()
             .pipe(
@@ -71,9 +64,9 @@ export class PreferencesFacade {
                 ),
             )
             .subscribe((preferences: Preferences) => {
-                getEnvironmentSingleton().preferences$.next(preferences)
+                Environment.preferences$.next(preferences)
             })
-        return getEnvironmentSingleton().preferences$
+        return Environment.preferences$
     }
 
     static getPreferencesScript$() {

@@ -35,16 +35,14 @@ export interface ExplorerState {
  * End of light versions
  */
 
-export function getEnvironmentSingleton(): IEnvironment {
+export function getEnvironmentSingleton(): ISharableEnvironment {
     return parent['@youwol/os-core'].Environment != Environment
         ? parent['@youwol/os-core'].getEnvironmentSingleton()
         : Environment
 }
 
-export class IEnvironment {
-    installManifest$: ReplaySubject<Manifest>
+export class ISharableEnvironment {
     applicationsInfo$: ReplaySubject<ApplicationInfo[]>
-    preferences$: ReplaySubject<Preferences>
     favoriteGroups$: BehaviorSubject<ExplorerBackend.GetGroupResponse[]>
     favoriteFolders$: BehaviorSubject<ExplorerBackend.GetFolderResponse[]>
     favoriteItems$: BehaviorSubject<ExplorerBackend.GetEntityResponse[]>
