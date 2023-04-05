@@ -166,13 +166,13 @@ return install
                                 )
                         }),
                     ).pipe(
-                        map((infos: unknown[]) =>
+                        map((infos: (ApplicationInfo | undefined)[]) =>
                             infos.filter((info) => info != undefined),
                         ),
                     )
                 }),
             )
-            .subscribe((d) => {
+            .subscribe((d: ApplicationInfo[]) => {
                 getEnvironmentSingleton().applicationsInfo$.next(d)
             })
         return getEnvironmentSingleton().applicationsInfo$
