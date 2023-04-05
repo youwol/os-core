@@ -15,6 +15,7 @@ import {
     Manifest,
     OpenWithParametrization,
 } from './environment'
+import { onHTTPErrors } from '@youwol/http-primitives'
 
 type TInstaller = (installer: Installer) => Promise<Installer>
 
@@ -151,14 +152,23 @@ return install
                                     restOfPath: '.yw_metadata.json',
                                 })
                                 .pipe(
-                                    map((resp) => {
-                                        return {
-                                            ...resp,
-                                            cdnPackage,
-                                        } as unknown as ApplicationInfo
+                                    onHTTPErrors((error) => {
+                                        console.error(
+                                            `Failed to retrieve application info of ${cdnPackage} (${error.status}).`,
+                                        )
+                                        return undefined
+                                    }),
+                                    map((resp: ApplicationInfo | undefined) => {
+                                        return resp
+                                            ? { ...resp, cdnPackage }
+                                            : undefined
                                     }),
                                 )
                         }),
+                    ).pipe(
+                        map((infos: unknown[]) =>
+                            infos.filter((info) => info != undefined),
+                        ),
                     )
                 }),
             )
