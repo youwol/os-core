@@ -37,10 +37,10 @@ export const defaultPreferencesContent = `
             () => new Date().toLocaleString()
         )
     }
-    const {ywInstall, desktopApp} = await cdnClient.install({
-        modules:['@youwol/welcome-desktop-widget'],
+    const { desktopApp} = await cdnClient.install({
+        modules:["@youwol/welcome-user-desktop"],
         aliases:{
-            'desktopApp': '@youwol/welcome-desktop-widget'
+            'desktopApp':"@youwol/welcome-user-desktop",
         }
     })
     return {
@@ -59,10 +59,16 @@ export const defaultPreferencesContent = `
                 // Left side icon & associated widgets
                 corporation: {
                     icon: { 
-                        class:'h-100 d-flex flex-column justify-content-center',
+                        class:'h-100 ml-2 d-flex flex-column justify-content-center',
                         innerHTML: youwolLogo 
                     },
-                    widgets:[]
+                    widgets:[{
+                    class:'text-center my-auto',
+                    innerText: fluxView.attr$(
+                        rxjs.timer(0,1000),
+                        () => new Date().toLocaleString()
+                    )
+                }]
                 },
                 // Custom widgets of the top-banner, here a timer displaying the current date
                 widgets: [{
@@ -75,7 +81,7 @@ export const defaultPreferencesContent = `
             },           
             // Desktop's widgets
             widgets:[
-                new desktopApp.MainView({platformState})
+               new desktopApp.MainView({platformState}),
             ]
         }
     }`

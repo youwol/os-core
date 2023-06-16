@@ -97,9 +97,9 @@ const entries = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.10',
+    version:'0.1.11-wip',
     shortDescription:"Core part of YouWol's Operating System.",
-    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core',
+    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
     sourceGithub:'https://github.com/youwol/os-core',
     userGuide:'https://l.youwol.com/doc/@youwol/os-core',
@@ -114,7 +114,7 @@ export const setup = {
     },
 
     installMainModule: ({cdnClient, installParameters}:{
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const parameters = installParameters || {}
@@ -133,7 +133,7 @@ export const setup = {
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
         name: string,
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const entry = secondaryEntries[name]
@@ -143,7 +143,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.10~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.1.11-wip~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
