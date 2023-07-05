@@ -59,7 +59,7 @@ export const defaultPreferencesContent = `
                 // Left side icon & associated widgets
                 corporation: {
                     icon: { 
-                        class:'h-100 ml-2 d-flex flex-column justify-content-center',
+                        class:'h-100  d-flex flex-column justify-content-center',
                         innerHTML: youwolLogo 
                     },
                     widgets:[{
