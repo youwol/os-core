@@ -2,6 +2,8 @@
 // ----------------- Youwol SVG icon -----------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
+import { BehaviorSubject } from 'rxjs'
+
 const bgYouWol = `
 <svg xmlns="http://www.w3.org/2000/svg" width="100vw" height="100vh" viewBox="-700 -600 2000 1920" preserveAspectRatio="xMidYMid slice">
 \t<style>body{margin:0; padding:0;}</style>
@@ -27,7 +29,7 @@ const ywLogo = `
 // ---------------------------------------------------------------------------------------------
 // ----------------- Common javascript/typescript of preferences -------------------------------
 // ---------------------------------------------------------------------------------------------
-
+export const isVisitor$ = new BehaviorSubject(true)
 export const defaultPreferencesContent = `
     
     const topBannerViewDefault = {
@@ -81,7 +83,7 @@ export const defaultPreferencesContent = `
             },           
             // Desktop's widgets
             widgets:[
-               new desktopApp.MainView({platformState}),
+               new desktopApp.MainView({platformState})
             ]
         }
     }`
