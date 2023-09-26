@@ -66,7 +66,7 @@ export class FavoritesFacade {
 
         if (!FavoritesFacade.initialFavorites$) {
             FavoritesFacade.initialFavorites$ =
-                RequestsExecutor.getFavorites().pipe(
+                RequestsExecutor.saveMissingManifestFavorites().pipe(
                     shareReplay({ bufferSize: 1, refCount: true }),
                 )
         }
