@@ -77,7 +77,7 @@ const exportedSymbols = {
     }
 }
 
-const mainEntry : {entryFile: string,loadDependencies:string[]} = {
+const mainEntry : {entryFile: string,loadDependencies:string[], aliases:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
         "@youwol/cdn-client",
@@ -85,6 +85,9 @@ const mainEntry : {entryFile: string,loadDependencies:string[]} = {
         "@youwol/flux-view",
         "rxjs",
         "uuid"
+    ],
+    "aliases": [
+        "osCore"
     ]
 }
 
