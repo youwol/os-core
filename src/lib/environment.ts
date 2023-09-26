@@ -169,6 +169,10 @@ export interface Manifest {
     applicationsData?: {
         [k: string]: ApplicationDataValue
     }
+
+    favorites?: {
+        items?: string[]
+    }
 }
 
 export interface OpenWithParametrization {

@@ -1,4 +1,4 @@
-import { Observable, of, Subject } from 'rxjs'
+import { combineLatest, Observable, of, Subject } from 'rxjs'
 import {
     AssetsGateway,
     CdnSessionsStorage,
@@ -11,8 +11,9 @@ import {
     send$,
     Json,
 } from '@youwol/http-primitives'
-import { delay, map } from 'rxjs/operators'
+import { delay, map, mergeMap } from 'rxjs/operators'
 import { Favorite } from './favorites'
+import { Installer } from './installer'
 
 export const debugDelay = 0
 
@@ -227,6 +228,55 @@ export class RequestsExecutor {
                     }
                 }),
             )
+    }
+
+    static saveMissingManifestFavorites() {
+        const client = new CdnSessionsStorage.Client()
+        const displayedManifestFavorites = 'displayed-manifest-favorites'
+        return combineLatest([
+            RequestsExecutor.getFavorites(),
+            Installer.getInstallManifest$().pipe(
+                dispatchHTTPErrors(RequestsExecutor.error$),
+            ),
+            client
+                .getData$({
+                    packageName: '@youwol/os-core',
+                    dataName: displayedManifestFavorites,
+                })
+                .pipe(
+                    dispatchHTTPErrors(RequestsExecutor.error$),
+                    map((d) => d as { items?: string[] }),
+                ),
+        ]).pipe(
+            mergeMap(([favorites, manifest, displayed]) => {
+                const manifestItemsFavorites = manifest?.favorites?.items || []
+                const displayedItems = displayed?.items || []
+                const missingDisplayed = manifestItemsFavorites.filter(
+                    (favorite) => !displayedItems.includes(favorite),
+                )
+
+                if (missingDisplayed.length === 0) {
+                    return of(favorites)
+                }
+                const newFavorites = {
+                    ...favorites,
+                    favoriteItems: [
+                        ...favorites.favoriteItems,
+                        ...missingDisplayed.map((id) => ({ id })),
+                    ],
+                }
+                return RequestsExecutor.saveFavorites(newFavorites).pipe(
+                    mergeMap(() =>
+                        client.postData$({
+                            packageName: '@youwol/os-core',
+                            dataName: displayedManifestFavorites,
+                            body: { items: manifestItemsFavorites },
+                        }),
+                    ),
+                    map(() => newFavorites),
+                )
+            }),
+        )
     }
 
     static saveInstallerScript({

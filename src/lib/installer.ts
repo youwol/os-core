@@ -291,6 +291,9 @@ return install
                     .filter((s) => s.applicationsData)
                     .map((s) => s.applicationsData),
             ),
+            favorites: mergeFavorites(
+                resolvedSet.filter((s) => s.favorites).map((s) => s.favorites),
+            ),
         }
     }
 }
@@ -322,6 +325,11 @@ function mergeApplicationsData(data: { [k: string]: ApplicationDataValue }[]) {
         }, {})
         return { ...acc, [id]: mergedPackageData }
     }, {})
+}
+
+function mergeFavorites(data: { items?: string[] }[]) {
+    const items = data.map((d) => d.items || []).flat()
+    return { items }
 }
 
 function getFlatParametrizationList(appsInfo: ApplicationInfo[]) {
