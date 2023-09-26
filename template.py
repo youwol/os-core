@@ -52,6 +52,7 @@ template = Template(
     userGuide=True,
 )
 
+
 generate_template(template)
 
 shutil.copyfile(
