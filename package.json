@@ -1,7 +1,7 @@
 {
     "name": "@youwol/os-core",
     "description": "Core part of YouWol's Operating System.",
-    "version": "0.1.12",
+    "version": "0.1.13-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/os-core#README.md",
     "main": "dist/@youwol/os-core.js",
@@ -48,7 +48,7 @@
     },
     "dependencies": {
         "@youwol/http-primitives": "^0.1.2",
-        "@youwol/cdn-client": "^1.0.2",
+        "@youwol/cdn-client": "^2.1.0",
         "@youwol/http-clients": "^2.0.1",
         "@youwol/flux-view": "^1.0.3",
         "rxjs": "^6.5.5",
@@ -56,7 +56,7 @@
     },
     "webpm": {
         "dependencies": {
-            "@youwol/cdn-client": "^1.0.2",
+            "@youwol/cdn-client": "^2.1.0",
             "@youwol/http-clients": "^2.0.1",
             "@youwol/flux-view": "^1.0.3",
             "rxjs": "^6.5.5",
