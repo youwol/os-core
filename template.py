@@ -27,7 +27,7 @@ template = Template(
         runTime=RunTimeDeps(
             externals={
                 "@youwol/http-primitives": "^0.1.2",
-                "@youwol/cdn-client": "^1.0.2",
+                "@youwol/cdn-client": "^2.1.0",
                 "@youwol/http-clients": "^2.0.1",
                 "@youwol/flux-view": "^1.0.3",
                 "rxjs": "^6.5.5",
