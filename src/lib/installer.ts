@@ -231,12 +231,20 @@ return install
                     .split('.')
                     .slice(1)
                     .reduce((acc, e) => acc[e], window[libraryName])
+
+                if (!parent.install) {
+                    console.error('ERROR can not find library ', {
+                        libraryName,
+                        libraryPath,
+                    })
+                    return undefined
+                }
                 return parent.install
             }),
         )
         const allGenerators = [
             ...this.generatorManifests,
-            ...generatorsFromLibs,
+            ...generatorsFromLibs.filter((d) => d != undefined),
         ]
         const generatorManifests = await Promise.all(
             [...new Set(allGenerators)].map((generator) => {
