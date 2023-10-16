@@ -2,7 +2,7 @@
 const runTimeDependencies = {
     "externals": {
         "@youwol/http-primitives": "^0.1.2",
-        "@youwol/cdn-client": "^1.0.2",
+        "@youwol/cdn-client": "^2.1.0",
         "@youwol/http-clients": "^2.0.1",
         "@youwol/flux-view": "^1.0.3",
         "rxjs": "^6.5.5",
@@ -19,7 +19,7 @@ const externals = {
     "@youwol/cdn-client": {
         "commonjs": "@youwol/cdn-client",
         "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv1"
+        "root": "@youwol/cdn-client_APIv2"
     },
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
@@ -56,7 +56,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/http-primitives"
     },
     "@youwol/cdn-client": {
-        "apiKey": "1",
+        "apiKey": "2",
         "exportedSymbol": "@youwol/cdn-client"
     },
     "@youwol/http-clients": {
@@ -97,7 +97,7 @@ const entries = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.12',
+    version:'0.1.13-wip',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
@@ -143,7 +143,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.12~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.1.13-wip~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
