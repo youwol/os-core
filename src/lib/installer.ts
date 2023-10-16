@@ -219,15 +219,11 @@ return install
                 "Maximum recursion depth reached during installer's resolution",
             )
         }
-        // we need to install only first layer => all inner dependencies are fetched by design
-        if (depth == 0) {
-            await install({
-                modules: [...this.libraryManifests].map(
-                    (path) => path.split('.')[0],
-                ),
-            })
-        }
-
+        await install({
+            modules: [...this.libraryManifests].map(
+                (path) => path.split('.')[0],
+            ),
+        })
         const generatorsFromLibs = await Promise.all(
             [...this.libraryManifests].map((libraryPath) => {
                 const libraryName = libraryPath.split('.')[0]
