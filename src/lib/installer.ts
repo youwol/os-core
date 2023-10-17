@@ -1,4 +1,3 @@
-import { AssetsGateway } from '@youwol/http-clients'
 import { install } from '@youwol/cdn-client'
 import * as cdnClient from '@youwol/cdn-client'
 import { forkJoin, from, Observable, of, ReplaySubject } from 'rxjs'
@@ -15,7 +14,6 @@ import {
     Manifest,
     OpenWithParametrization,
 } from './environment'
-import { onHTTPErrors } from '@youwol/http-primitives'
 
 type TInstaller = (installer: Installer) => Promise<Installer>
 
@@ -76,16 +74,22 @@ return install
         tsSrc: string
         jsSrc: string
     }) {
-        return new Function(jsSrc)()(new Installer())
-            .then((installer) => installer.resolve())
-            .then((manifest: Manifest) => {
+        return Installer.tryInstallerScript({ jsSrc }).then(
+            (manifest: Manifest) => {
                 RequestsExecutor.saveInstallerScript({
                     tsSrc,
                     jsSrc,
                 }).subscribe()
                 Installer.getInstallManifest$().next(manifest)
-            })
+            },
+        )
     }
+    static async tryInstallerScript({ jsSrc }): Promise<Manifest> {
+        return new Function(jsSrc)()(new Installer()).then((installer) =>
+            installer.resolve(),
+        )
+    }
+
     static getDefaultInstaller() {
         return {
             tsSrc: Installer.defaultInstallTsScript,
@@ -139,31 +143,15 @@ return install
         this.getInstallManifest$()
             .pipe(
                 mergeMap((manifest) => {
-                    const client = new AssetsGateway.Client().cdn
                     if (manifest.applications.length == 0) {
                         return of([])
                     }
                     return forkJoin(
                         manifest.applications.map((cdnPackage) => {
-                            return client
-                                .getResource$({
-                                    libraryId: window.btoa(cdnPackage),
-                                    version: 'latest',
-                                    restOfPath: '.yw_metadata.json',
-                                })
-                                .pipe(
-                                    onHTTPErrors((error) => {
-                                        console.error(
-                                            `Failed to retrieve application info of ${cdnPackage} (${error.status}).`,
-                                        )
-                                        return undefined
-                                    }),
-                                    map((resp: ApplicationInfo | undefined) => {
-                                        return resp
-                                            ? { ...resp, cdnPackage }
-                                            : undefined
-                                    }),
-                                )
+                            return RequestsExecutor.getApplicationInfo({
+                                cdnPackage,
+                                version: 'latest',
+                            })
                         }),
                     ).pipe(
                         map((infos: (ApplicationInfo | undefined)[]) =>
@@ -219,15 +207,11 @@ return install
                 "Maximum recursion depth reached during installer's resolution",
             )
         }
-        // we need to install only first layer => all inner dependencies are fetched by design
-        if (depth == 0) {
-            await install({
-                modules: [...this.libraryManifests].map(
-                    (path) => path.split('.')[0],
-                ),
-            })
-        }
-
+        await install({
+            modules: [...this.libraryManifests].map(
+                (path) => path.split('.')[0],
+            ),
+        })
         const generatorsFromLibs = await Promise.all(
             [...this.libraryManifests].map((libraryPath) => {
                 const libraryName = libraryPath.split('.')[0]
@@ -235,12 +219,20 @@ return install
                     .split('.')
                     .slice(1)
                     .reduce((acc, e) => acc[e], window[libraryName])
+
+                if (!parent.install) {
+                    console.error('ERROR can not find library ', {
+                        libraryName,
+                        libraryPath,
+                    })
+                    return undefined
+                }
                 return parent.install
             }),
         )
         const allGenerators = [
             ...this.generatorManifests,
-            ...generatorsFromLibs,
+            ...generatorsFromLibs.filter((d) => d != undefined),
         ]
         const generatorManifests = await Promise.all(
             [...new Set(allGenerators)].map((generator) => {
@@ -327,9 +319,10 @@ function mergeApplicationsData(data: { [k: string]: ApplicationDataValue }[]) {
     }, {})
 }
 
-function mergeFavorites(data: { items?: string[] }[]) {
+function mergeFavorites(data: { items?: string[]; applications?: string[] }[]) {
     const items = data.map((d) => d.items || []).flat()
-    return { items }
+    const applications = data.map((d) => d.applications || []).flat()
+    return { items, applications }
 }
 
 function getFlatParametrizationList(appsInfo: ApplicationInfo[]) {

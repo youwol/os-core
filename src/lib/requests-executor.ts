@@ -10,10 +10,12 @@ import {
     HTTPError,
     send$,
     Json,
+    onHTTPErrors,
 } from '@youwol/http-primitives'
 import { delay, map, mergeMap } from 'rxjs/operators'
 import { Favorite } from './favorites'
 import { Installer } from './installer'
+import { ApplicationInfo } from './environment'
 
 export const debugDelay = 0
 
@@ -55,6 +57,33 @@ export class RequestsExecutor {
                 itemId,
             })
             .pipe(dispatchHTTPErrors(this.error$))
+    }
+
+    static getApplicationInfo({
+        cdnPackage,
+        version,
+    }: {
+        cdnPackage: string
+        version: string
+    }) {
+        const client = new AssetsGateway.Client().cdn
+        return client
+            .getResource$({
+                libraryId: window.btoa(cdnPackage),
+                version,
+                restOfPath: '.yw_metadata.json',
+            })
+            .pipe(
+                onHTTPErrors((error) => {
+                    console.error(
+                        `Failed to retrieve application info of ${cdnPackage} (${error.status}).`,
+                    )
+                    return undefined
+                }),
+                map((resp: ApplicationInfo | undefined) => {
+                    return resp ? { ...resp, cdnPackage } : undefined
+                }),
+            )
     }
 
     static trashFolder(folderId: string) {
@@ -225,6 +254,7 @@ export class RequestsExecutor {
                         favoriteFolders: getValue('favoriteFolders'),
                         favoriteItems: getValue('favoriteItems'),
                         favoriteGroups: getValue('favoriteGroups'),
+                        favoriteApplications: getValue('favoriteApplications'),
                     }
                 }),
             )
@@ -245,24 +275,39 @@ export class RequestsExecutor {
                 })
                 .pipe(
                     dispatchHTTPErrors(RequestsExecutor.error$),
-                    map((d) => d as { items?: string[] }),
+                    map(
+                        (d) =>
+                            d as { items?: string[]; applications?: string[] },
+                    ),
                 ),
         ]).pipe(
             mergeMap(([favorites, manifest, displayed]) => {
                 const manifestItemsFavorites = manifest?.favorites?.items || []
+                const manifestAppsFavorites =
+                    manifest?.favorites?.applications || []
                 const displayedItems = displayed?.items || []
-                const missingDisplayed = manifestItemsFavorites.filter(
+                const displayedApplications = displayed?.applications || []
+                const missingItemsDisplayed = manifestItemsFavorites.filter(
                     (favorite) => !displayedItems.includes(favorite),
                 )
-
-                if (missingDisplayed.length === 0) {
+                const missingAppsDisplayed = manifestAppsFavorites.filter(
+                    (favorite) => !displayedApplications.includes(favorite),
+                )
+                if (
+                    missingItemsDisplayed.length === 0 &&
+                    missingAppsDisplayed.length === 0
+                ) {
                     return of(favorites)
                 }
                 const newFavorites = {
                     ...favorites,
                     favoriteItems: [
                         ...favorites.favoriteItems,
-                        ...missingDisplayed.map((id) => ({ id })),
+                        ...missingItemsDisplayed.map((id) => ({ id })),
+                    ],
+                    favoriteApplications: [
+                        ...favorites.favoriteApplications,
+                        ...missingAppsDisplayed.map((id) => ({ id })),
                     ],
                 }
                 return RequestsExecutor.saveFavorites(newFavorites).pipe(

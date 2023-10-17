@@ -24,15 +24,24 @@ export class PreferencesFacade {
         tsSrc: string
         jsSrc: string
     }) {
+        return PreferencesFacade.tryPreferencesScript({ jsSrc }).then(
+            (preferences: Preferences) => {
+                RequestsExecutor.savePreferencesScript({
+                    tsSrc,
+                    jsSrc,
+                }).subscribe()
+                PreferencesFacade.getPreferences$().next(preferences)
+            },
+        )
+    }
+
+    static tryPreferencesScript({ jsSrc }): Promise<Preferences> {
         return new Function(jsSrc)()({
             rxjs,
             cdnClient,
             httpClients,
             fluxView,
             platformState: ChildApplicationAPI.getOsInstance(),
-        }).then((preferences: Preferences) => {
-            RequestsExecutor.savePreferencesScript({ tsSrc, jsSrc }).subscribe()
-            PreferencesFacade.getPreferences$().next(preferences)
         })
     }
 
