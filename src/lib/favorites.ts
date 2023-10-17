@@ -208,8 +208,6 @@ export class FavoritesFacade {
     }
 
     static toggleFavorites(target: Target, newElement: Favorite) {
-        let actualFavorites = []
-        let others = {}
         combineLatest([
             FavoritesFacade.getGroups$(),
             FavoritesFacade.getFolders$(),
@@ -224,71 +222,37 @@ export class FavoritesFacade {
                     favoriteItems,
                     favoriteApps,
                 ]) => {
-                    if (target == 'favoriteGroups$') {
-                        actualFavorites = favoriteGroups
-                        others = {
-                            favoriteItems: favoriteItems.map((i) => ({
-                                id: getId('favoriteItems$', i),
-                            })),
-                            favoriteFolders: favoriteFolders.map((i) => ({
-                                id: getId('favoriteFolders$', i),
-                            })),
-                            favoriteApps: favoriteApps.map((i) => ({
-                                id: getId('favoriteApplications$', i),
-                            })),
-                        }
+                    const allFavoritesId = {
+                        favoriteItems: favoriteItems.map((i) => ({
+                            id: getId('favoriteItems$', i),
+                        })),
+                        favoriteFolders: favoriteFolders.map((i) => ({
+                            id: getId('favoriteFolders$', i),
+                        })),
+                        favoriteGroups: favoriteGroups.map((i) => ({
+                            id: getId('favoriteGroups$', i),
+                        })),
+                        favoriteApps: favoriteApps.map((i) => ({
+                            id: getId('favoriteApplications$', i),
+                        })),
                     }
-                    if (target == 'favoriteFolders$') {
-                        actualFavorites = favoriteFolders
-                        others = {
-                            favoriteItems: favoriteItems.map((i) => ({
-                                id: getId('favoriteItems$', i),
-                            })),
-                            favoriteGroups: favoriteGroups.map((i) => ({
-                                id: getId('favoriteGroups$', i),
-                            })),
-                            favoriteApps: favoriteApps.map((i) => ({
-                                id: getId('favoriteApplications$', i),
-                            })),
-                        }
-                    }
-                    if (target == 'favoriteItems$') {
-                        actualFavorites = favoriteItems
-                        others = {
-                            favoriteFolders: favoriteFolders.map((i) => ({
-                                id: getId('favoriteFolders$', i),
-                            })),
-                            favoriteGroups: favoriteGroups.map((i) => ({
-                                id: getId('favoriteGroups$', i),
-                            })),
-                            favoriteApps: favoriteApps.map((i) => ({
-                                id: getId('favoriteApplications$', i),
-                            })),
-                        }
-                    }
-                    if (target == 'favoriteApplications$') {
-                        actualFavorites = favoriteApps
-                        others = {
-                            favoriteFolders: favoriteFolders.map((i) => ({
-                                id: getId('favoriteFolders$', i),
-                            })),
-                            favoriteGroups: favoriteGroups.map((i) => ({
-                                id: getId('favoriteGroups$', i),
-                            })),
-                            favoriteItems: favoriteItems.map((i) => ({
-                                id: getId('favoriteItems$', i),
-                            })),
-                        }
-                    }
+                    const actualFavorites: AnyFavoriteResponse[] = {
+                        favoriteItems$: favoriteItems,
+                        favoriteFolders$: favoriteFolders,
+                        favoriteGroups$: favoriteGroups,
+                        favoriteApplications$: favoriteApps,
+                    }[target]
+
                     const filtered = actualFavorites.filter(
                         (item) => getId(target, item) != newElement.id,
                     )
                     const items$ =
                         filtered.length != actualFavorites.length
                             ? of(filtered)
-                            : getFavoriteResponse$(target, newElement.id).pipe(
-                                  map((resp) => [...actualFavorites, resp]),
-                              )
+                            : getFavoriteResponse$<AnyFavoriteResponse>(
+                                  target,
+                                  newElement.id,
+                              ).pipe(map((resp) => [...actualFavorites, resp]))
                     items$
                         .pipe(
                             take(1),
@@ -297,7 +261,7 @@ export class FavoritesFacade {
                             }),
                             mergeMap((items) => {
                                 return RequestsExecutor.saveFavorites({
-                                    ...others,
+                                    ...allFavoritesId,
                                     [FavoritesFacade.toBodyName[target]]:
                                         items.map((item) => ({
                                             id: getId(target, item),
