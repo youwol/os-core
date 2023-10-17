@@ -74,16 +74,22 @@ return install
         tsSrc: string
         jsSrc: string
     }) {
-        return new Function(jsSrc)()(new Installer())
-            .then((installer) => installer.resolve())
-            .then((manifest: Manifest) => {
+        return Installer.tryInstallerScript({ jsSrc }).then(
+            (manifest: Manifest) => {
                 RequestsExecutor.saveInstallerScript({
                     tsSrc,
                     jsSrc,
                 }).subscribe()
                 Installer.getInstallManifest$().next(manifest)
-            })
+            },
+        )
     }
+    static async tryInstallerScript({ jsSrc }): Promise<Manifest> {
+        return new Function(jsSrc)()(new Installer()).then((installer) =>
+            installer.resolve(),
+        )
+    }
+
     static getDefaultInstaller() {
         return {
             tsSrc: Installer.defaultInstallTsScript,
