@@ -313,9 +313,10 @@ function mergeApplicationsData(data: { [k: string]: ApplicationDataValue }[]) {
     }, {})
 }
 
-function mergeFavorites(data: { items?: string[] }[]) {
+function mergeFavorites(data: { items?: string[]; applications?: string[] }[]) {
     const items = data.map((d) => d.items || []).flat()
-    return { items }
+    const applications = data.map((d) => d.applications || []).flat()
+    return { items, applications }
 }
 
 function getFlatParametrizationList(appsInfo: ApplicationInfo[]) {

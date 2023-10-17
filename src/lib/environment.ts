@@ -172,6 +172,7 @@ export interface Manifest {
 
     favorites?: {
         items?: string[]
+        applications?: string[]
     }
 }
 

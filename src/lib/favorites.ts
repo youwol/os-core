@@ -17,6 +17,7 @@ export interface Favorite {
 }
 export type FavoriteGroup = Favorite
 export type FavoriteFolder = Favorite
+export type FavoriteApplication = Favorite
 export interface FavoriteItem extends Favorite {
     type: string
 }
@@ -25,20 +26,30 @@ type AnyFavoriteResponse =
     | ExplorerBackend.GetFolderResponse
     | ExplorerBackend.GetGroupResponse
     | ExplorerBackend.GetItemResponse
-type Target = 'favoriteGroups$' | 'favoriteFolders$' | 'favoriteItems$'
-type TargetBody = 'favoriteGroups' | 'favoriteFolders' | 'favoriteItems'
+type Target =
+    | 'favoriteGroups$'
+    | 'favoriteFolders$'
+    | 'favoriteItems$'
+    | 'favoriteApplications$'
+type TargetBody =
+    | 'favoriteGroups'
+    | 'favoriteFolders'
+    | 'favoriteItems'
+    | 'favoriteApplications'
 
 export class FavoritesFacade {
     static initialFavorites$: Observable<{
         favoriteGroups: FavoriteGroup[]
         favoriteItems: FavoriteItem[]
         favoriteFolders: FavoriteFolder[]
+        favoriteApplications: FavoriteApplication[]
     }>
 
     static toBodyName: Record<Target, TargetBody> = {
         favoriteGroups$: 'favoriteGroups',
         favoriteFolders$: 'favoriteFolders',
         favoriteItems$: 'favoriteItems',
+        favoriteApplications$: 'favoriteApplications',
     }
 
     static getFolders$() {
@@ -57,6 +68,11 @@ export class FavoritesFacade {
         )
     }
 
+    static getApplications$() {
+        return FavoritesFacade._get$<ExplorerBackend.GetItemResponse>(
+            'favoriteApplications$',
+        )
+    }
     static _get$<T>(target: Target): BehaviorSubject<T[]> {
         const environment = getEnvironmentSingleton()
         if (environment[target]) {
@@ -112,6 +128,7 @@ export class FavoritesFacade {
             FavoritesFacade.getGroups$(),
             FavoritesFacade.getFolders$(),
             FavoritesFacade.getItems$(),
+            FavoritesFacade.getApplications$(),
         ])
             .pipe(take(1))
             .subscribe(([groups, folders, items]) => {
@@ -130,6 +147,11 @@ export class FavoritesFacade {
                     items,
                     FavoritesFacade.getItems$,
                 )
+                updateIfNeeded(
+                    'favoriteApplications$',
+                    items,
+                    FavoritesFacade.getApplications$,
+                )
             })
     }
 
@@ -138,9 +160,10 @@ export class FavoritesFacade {
             FavoritesFacade.getGroups$(),
             FavoritesFacade.getFolders$(),
             FavoritesFacade.getItems$(),
+            FavoritesFacade.getApplications$(),
         ])
             .pipe(take(1))
-            .subscribe(([groups, folders, items]) => {
+            .subscribe(([groups, folders, items, applications]) => {
                 if (groups.find((g) => g.id == deletedId)) {
                     this.toggleFavoriteGroup(deletedId)
                 }
@@ -155,6 +178,13 @@ export class FavoritesFacade {
                     items.find((i) => getId('favoriteItems$', i) == deletedId)
                 ) {
                     this.toggleFavoriteItem(deletedId)
+                }
+                if (
+                    applications.find(
+                        (a) => getId('favoriteApplications$', a) == deletedId,
+                    )
+                ) {
+                    this.toggleFavoriteApplication(deletedId)
                 }
             })
     }
@@ -171,6 +201,12 @@ export class FavoritesFacade {
         FavoritesFacade.toggleFavorites('favoriteItems$', { id: treeId })
     }
 
+    static toggleFavoriteApplication(assetId: string) {
+        FavoritesFacade.toggleFavorites('favoriteApplications$', {
+            id: assetId,
+        })
+    }
+
     static toggleFavorites(target: Target, newElement: Favorite) {
         let actualFavorites = []
         let others = {}
@@ -178,84 +214,118 @@ export class FavoritesFacade {
             FavoritesFacade.getGroups$(),
             FavoritesFacade.getFolders$(),
             FavoritesFacade.getItems$(),
+            FavoritesFacade.getApplications$(),
         ])
             .pipe(take(1))
-            .subscribe(([favoriteGroups, favoriteFolders, favoriteItems]) => {
-                if (target == 'favoriteGroups$') {
-                    actualFavorites = favoriteGroups
-                    others = {
-                        favoriteItems: favoriteItems.map((i) => ({
-                            id: getId('favoriteItems$', i),
-                        })),
-                        favoriteFolders: favoriteFolders.map((i) => ({
-                            id: getId('favoriteFolders$', i),
-                        })),
+            .subscribe(
+                ([
+                    favoriteGroups,
+                    favoriteFolders,
+                    favoriteItems,
+                    favoriteApps,
+                ]) => {
+                    if (target == 'favoriteGroups$') {
+                        actualFavorites = favoriteGroups
+                        others = {
+                            favoriteItems: favoriteItems.map((i) => ({
+                                id: getId('favoriteItems$', i),
+                            })),
+                            favoriteFolders: favoriteFolders.map((i) => ({
+                                id: getId('favoriteFolders$', i),
+                            })),
+                            favoriteApps: favoriteApps.map((i) => ({
+                                id: getId('favoriteApplications$', i),
+                            })),
+                        }
                     }
-                }
-                if (target == 'favoriteFolders$') {
-                    actualFavorites = favoriteFolders
-                    others = {
-                        favoriteItems: favoriteItems.map((i) => ({
-                            id: getId('favoriteItems$', i),
-                        })),
-                        favoriteGroups: favoriteGroups.map((i) => ({
-                            id: getId('favoriteGroups$', i),
-                        })),
+                    if (target == 'favoriteFolders$') {
+                        actualFavorites = favoriteFolders
+                        others = {
+                            favoriteItems: favoriteItems.map((i) => ({
+                                id: getId('favoriteItems$', i),
+                            })),
+                            favoriteGroups: favoriteGroups.map((i) => ({
+                                id: getId('favoriteGroups$', i),
+                            })),
+                            favoriteApps: favoriteApps.map((i) => ({
+                                id: getId('favoriteApplications$', i),
+                            })),
+                        }
                     }
-                }
-                if (target == 'favoriteItems$') {
-                    actualFavorites = favoriteItems
-                    others = {
-                        favoriteFolders: favoriteFolders.map((i) => ({
-                            id: getId('favoriteFolders$', i),
-                        })),
-                        favoriteGroups: favoriteGroups.map((i) => ({
-                            id: getId('favoriteGroups$', i),
-                        })),
+                    if (target == 'favoriteItems$') {
+                        actualFavorites = favoriteItems
+                        others = {
+                            favoriteFolders: favoriteFolders.map((i) => ({
+                                id: getId('favoriteFolders$', i),
+                            })),
+                            favoriteGroups: favoriteGroups.map((i) => ({
+                                id: getId('favoriteGroups$', i),
+                            })),
+                            favoriteApps: favoriteApps.map((i) => ({
+                                id: getId('favoriteApplications$', i),
+                            })),
+                        }
                     }
-                }
-                const filtered = actualFavorites.filter(
-                    (item) => getId(target, item) != newElement.id,
-                )
-                const items$ =
-                    filtered.length != actualFavorites.length
-                        ? of(filtered)
-                        : getFavoriteResponse$(target, newElement.id).pipe(
-                              map((resp) => [...actualFavorites, resp]),
-                          )
-                items$
-                    .pipe(
-                        take(1),
-                        tap((items) => {
-                            FavoritesFacade._get$(target).next(items)
-                        }),
-                        mergeMap((items) => {
-                            return RequestsExecutor.saveFavorites({
-                                ...others,
-                                [FavoritesFacade.toBodyName[target]]: items.map(
-                                    (item) => ({
-                                        id: getId(target, item),
-                                    }),
-                                ),
-                            } as {
-                                favoriteGroups: Favorite[]
-                                favoriteFolders: Favorite[]
-                                favoriteItems: Favorite[]
-                            })
-                        }),
+                    if (target == 'favoriteApplications$') {
+                        actualFavorites = favoriteApps
+                        others = {
+                            favoriteFolders: favoriteFolders.map((i) => ({
+                                id: getId('favoriteFolders$', i),
+                            })),
+                            favoriteGroups: favoriteGroups.map((i) => ({
+                                id: getId('favoriteGroups$', i),
+                            })),
+                            favoriteItems: favoriteItems.map((i) => ({
+                                id: getId('favoriteItems$', i),
+                            })),
+                        }
+                    }
+                    const filtered = actualFavorites.filter(
+                        (item) => getId(target, item) != newElement.id,
                     )
-                    .subscribe()
-            })
+                    const items$ =
+                        filtered.length != actualFavorites.length
+                            ? of(filtered)
+                            : getFavoriteResponse$(target, newElement.id).pipe(
+                                  map((resp) => [...actualFavorites, resp]),
+                              )
+                    items$
+                        .pipe(
+                            take(1),
+                            tap((items) => {
+                                FavoritesFacade._get$(target).next(items)
+                            }),
+                            mergeMap((items) => {
+                                return RequestsExecutor.saveFavorites({
+                                    ...others,
+                                    [FavoritesFacade.toBodyName[target]]:
+                                        items.map((item) => ({
+                                            id: getId(target, item),
+                                        })),
+                                } as {
+                                    favoriteGroups: Favorite[]
+                                    favoriteFolders: Favorite[]
+                                    favoriteItems: Favorite[]
+                                    favoriteApps: Favorite[]
+                                })
+                            }),
+                        )
+                        .subscribe()
+                },
+            )
     }
 }
 
 function getFavoriteResponse$<T>(target: Target, id: string): Observable<T> {
     const client = new AssetsGateway.Client().explorer
+    const appsOrItems = () =>
+        client.getItem$({ itemId: id }).pipe(raiseHTTPErrors()) as Observable<T>
+
     switch (target) {
         case 'favoriteItems$':
-            return client
-                .getItem$({ itemId: id })
-                .pipe(raiseHTTPErrors()) as Observable<T>
+            return appsOrItems()
+        case 'favoriteApplications$':
+            return appsOrItems()
         case 'favoriteFolders$':
             return client
                 .getFolder$({ folderId: id })
@@ -268,10 +338,10 @@ function getFavoriteResponse$<T>(target: Target, id: string): Observable<T> {
 
 function getId(target: Target, item: AnyFavoriteResponse) {
     if (
-        target == 'favoriteItems$' &&
+        (target === 'favoriteItems$' || target === 'favoriteApplications$') &&
         ExplorerBackend.isInstanceOfItemResponse(item)
     ) {
-        return item.itemId || this.folderId
+        return item.assetId
     }
     if (
         target == 'favoriteFolders$' &&
