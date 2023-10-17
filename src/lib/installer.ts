@@ -1,4 +1,3 @@
-import { AssetsGateway } from '@youwol/http-clients'
 import { install } from '@youwol/cdn-client'
 import * as cdnClient from '@youwol/cdn-client'
 import { forkJoin, from, Observable, of, ReplaySubject } from 'rxjs'
@@ -15,7 +14,6 @@ import {
     Manifest,
     OpenWithParametrization,
 } from './environment'
-import { onHTTPErrors } from '@youwol/http-primitives'
 
 type TInstaller = (installer: Installer) => Promise<Installer>
 
@@ -139,31 +137,15 @@ return install
         this.getInstallManifest$()
             .pipe(
                 mergeMap((manifest) => {
-                    const client = new AssetsGateway.Client().cdn
                     if (manifest.applications.length == 0) {
                         return of([])
                     }
                     return forkJoin(
                         manifest.applications.map((cdnPackage) => {
-                            return client
-                                .getResource$({
-                                    libraryId: window.btoa(cdnPackage),
-                                    version: 'latest',
-                                    restOfPath: '.yw_metadata.json',
-                                })
-                                .pipe(
-                                    onHTTPErrors((error) => {
-                                        console.error(
-                                            `Failed to retrieve application info of ${cdnPackage} (${error.status}).`,
-                                        )
-                                        return undefined
-                                    }),
-                                    map((resp: ApplicationInfo | undefined) => {
-                                        return resp
-                                            ? { ...resp, cdnPackage }
-                                            : undefined
-                                    }),
-                                )
+                            return RequestsExecutor.getApplicationInfo({
+                                cdnPackage,
+                                version: 'latest',
+                            })
                         }),
                     ).pipe(
                         map((infos: (ApplicationInfo | undefined)[]) =>

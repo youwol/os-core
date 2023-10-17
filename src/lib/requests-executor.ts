@@ -10,10 +10,12 @@ import {
     HTTPError,
     send$,
     Json,
+    onHTTPErrors,
 } from '@youwol/http-primitives'
 import { delay, map, mergeMap } from 'rxjs/operators'
 import { Favorite } from './favorites'
 import { Installer } from './installer'
+import { ApplicationInfo } from './environment'
 
 export const debugDelay = 0
 
@@ -55,6 +57,33 @@ export class RequestsExecutor {
                 itemId,
             })
             .pipe(dispatchHTTPErrors(this.error$))
+    }
+
+    static getApplicationInfo({
+        cdnPackage,
+        version,
+    }: {
+        cdnPackage: string
+        version: string
+    }) {
+        const client = new AssetsGateway.Client().cdn
+        return client
+            .getResource$({
+                libraryId: window.btoa(cdnPackage),
+                version,
+                restOfPath: '.yw_metadata.json',
+            })
+            .pipe(
+                onHTTPErrors((error) => {
+                    console.error(
+                        `Failed to retrieve application info of ${cdnPackage} (${error.status}).`,
+                    )
+                    return undefined
+                }),
+                map((resp: ApplicationInfo | undefined) => {
+                    return resp ? { ...resp, cdnPackage } : undefined
+                }),
+            )
     }
 
     static trashFolder(folderId: string) {
