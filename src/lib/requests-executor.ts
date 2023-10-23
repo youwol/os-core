@@ -218,19 +218,22 @@ export class RequestsExecutor {
         favoriteGroups,
         favoriteFolders,
         favoriteItems,
+        favoriteApplications,
     }: {
         favoriteGroups: Favorite[]
         favoriteFolders: Favorite[]
         favoriteItems: Favorite[]
+        favoriteApplications: Favorite[]
     }) {
         return new CdnSessionsStorage.Client()
             .postData$({
                 packageName: '@youwol/os-core',
                 dataName: 'favorites',
                 body: {
-                    favoriteGroups: favoriteGroups,
-                    favoriteFolders: favoriteFolders,
-                    favoriteItems: favoriteItems,
+                    favoriteGroups,
+                    favoriteFolders,
+                    favoriteItems,
+                    favoriteApplications,
                 } as unknown as Json,
             })
             .pipe(dispatchHTTPErrors(this.error$))
@@ -315,7 +318,10 @@ export class RequestsExecutor {
                         client.postData$({
                             packageName: '@youwol/os-core',
                             dataName: displayedManifestFavorites,
-                            body: { items: manifestItemsFavorites },
+                            body: {
+                                items: manifestItemsFavorites,
+                                applications: manifestAppsFavorites,
+                            },
                         }),
                     ),
                     map(() => newFavorites),
