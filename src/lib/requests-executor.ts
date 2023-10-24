@@ -225,15 +225,18 @@ export class RequestsExecutor {
         favoriteItems: Favorite[]
         favoriteApplications: Favorite[]
     }) {
+        const toUnique = (items: Favorite[]) => {
+            return [...new Map(items.map((v) => [v.id, v])).values()]
+        }
         return new CdnSessionsStorage.Client()
             .postData$({
                 packageName: '@youwol/os-core',
                 dataName: 'favorites',
                 body: {
-                    favoriteGroups,
-                    favoriteFolders,
-                    favoriteItems,
-                    favoriteApplications,
+                    favoriteGroups: toUnique(favoriteGroups),
+                    favoriteFolders: toUnique(favoriteFolders),
+                    favoriteItems: toUnique(favoriteItems),
+                    favoriteApplications: toUnique(favoriteApplications),
                 } as unknown as Json,
             })
             .pipe(dispatchHTTPErrors(this.error$))
