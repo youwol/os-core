@@ -269,6 +269,9 @@ export class RequestsExecutor {
     static saveMissingManifestFavorites() {
         const client = new CdnSessionsStorage.Client()
         const displayedManifestFavorites = 'displayed-manifest-favorites'
+        const toUnique = (items: Favorite[]) => {
+            return [...new Map(items.map((v) => [v.id, v])).values()]
+        }
         return combineLatest([
             RequestsExecutor.getFavorites(),
             Installer.getInstallManifest$().pipe(
@@ -307,14 +310,14 @@ export class RequestsExecutor {
                 }
                 const newFavorites = {
                     ...favorites,
-                    favoriteItems: [
+                    favoriteItems: toUnique([
                         ...favorites.favoriteItems,
                         ...missingItemsDisplayed.map((id) => ({ id })),
-                    ],
-                    favoriteApplications: [
+                    ]),
+                    favoriteApplications: toUnique([
                         ...favorites.favoriteApplications,
                         ...missingAppsDisplayed.map((id) => ({ id })),
-                    ],
+                    ]),
                 }
                 return RequestsExecutor.saveFavorites(newFavorites).pipe(
                     mergeMap(() =>
