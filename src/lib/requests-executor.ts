@@ -218,19 +218,25 @@ export class RequestsExecutor {
         favoriteGroups,
         favoriteFolders,
         favoriteItems,
+        favoriteApplications,
     }: {
         favoriteGroups: Favorite[]
         favoriteFolders: Favorite[]
         favoriteItems: Favorite[]
+        favoriteApplications: Favorite[]
     }) {
+        const toUnique = (items: Favorite[]) => {
+            return [...new Map(items.map((v) => [v.id, v])).values()]
+        }
         return new CdnSessionsStorage.Client()
             .postData$({
                 packageName: '@youwol/os-core',
                 dataName: 'favorites',
                 body: {
-                    favoriteGroups: favoriteGroups,
-                    favoriteFolders: favoriteFolders,
-                    favoriteItems: favoriteItems,
+                    favoriteGroups: toUnique(favoriteGroups),
+                    favoriteFolders: toUnique(favoriteFolders),
+                    favoriteItems: toUnique(favoriteItems),
+                    favoriteApplications: toUnique(favoriteApplications),
                 } as unknown as Json,
             })
             .pipe(dispatchHTTPErrors(this.error$))
@@ -263,6 +269,9 @@ export class RequestsExecutor {
     static saveMissingManifestFavorites() {
         const client = new CdnSessionsStorage.Client()
         const displayedManifestFavorites = 'displayed-manifest-favorites'
+        const toUnique = (items: Favorite[]) => {
+            return [...new Map(items.map((v) => [v.id, v])).values()]
+        }
         return combineLatest([
             RequestsExecutor.getFavorites(),
             Installer.getInstallManifest$().pipe(
@@ -301,21 +310,24 @@ export class RequestsExecutor {
                 }
                 const newFavorites = {
                     ...favorites,
-                    favoriteItems: [
+                    favoriteItems: toUnique([
                         ...favorites.favoriteItems,
                         ...missingItemsDisplayed.map((id) => ({ id })),
-                    ],
-                    favoriteApplications: [
+                    ]),
+                    favoriteApplications: toUnique([
                         ...favorites.favoriteApplications,
                         ...missingAppsDisplayed.map((id) => ({ id })),
-                    ],
+                    ]),
                 }
                 return RequestsExecutor.saveFavorites(newFavorites).pipe(
                     mergeMap(() =>
                         client.postData$({
                             packageName: '@youwol/os-core',
                             dataName: displayedManifestFavorites,
-                            body: { items: manifestItemsFavorites },
+                            body: {
+                                items: manifestItemsFavorites,
+                                applications: manifestAppsFavorites,
+                            },
                         }),
                     ),
                     map(() => newFavorites),

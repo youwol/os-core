@@ -232,7 +232,7 @@ export class FavoritesFacade {
                         favoriteGroups: favoriteGroups.map((i) => ({
                             id: getId('favoriteGroups$', i),
                         })),
-                        favoriteApps: favoriteApps.map((i) => ({
+                        favoriteApplications: favoriteApps.map((i) => ({
                             id: getId('favoriteApplications$', i),
                         })),
                     }
@@ -270,7 +270,7 @@ export class FavoritesFacade {
                                     favoriteGroups: Favorite[]
                                     favoriteFolders: Favorite[]
                                     favoriteItems: Favorite[]
-                                    favoriteApps: Favorite[]
+                                    favoriteApplications: Favorite[]
                                 })
                             }),
                         )
