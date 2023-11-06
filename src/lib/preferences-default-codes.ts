@@ -37,12 +37,13 @@ export const defaultPreferencesContent = `
             () => new Date().toLocaleString()
         )
     }
-    const { desktopApp} = await cdnClient.install({
-        modules:["@youwol/welcome-user-desktop"],
+    const { osWidgets } = await cdnClient.install({
+        modules:['@youwol/os-widgets'],
         aliases:{
-            'desktopApp':"@youwol/welcome-user-desktop",
+            'osWidgets':'@youwol/os-widgets'
         }
     })
+    const favorites = await osWidgets.favoritesWidget()
     return {
         cssTheme: 'coming soon',
         desktop:{
@@ -81,7 +82,7 @@ export const defaultPreferencesContent = `
             },           
             // Desktop's widgets
             widgets:[
-               new desktopApp.MainView({platformState}),
+                favorites
             ]
         }
     }`

@@ -52,7 +52,7 @@ export class Installer {
     static defaultInstallJsScript = `
 async function install(installer){
     return installer.with({
-        fromLibraries:["@youwol/installers-youwol.youwolDev"]
+        fromLibraries:["@youwol/installers"]
     })
 }
 return install
@@ -62,11 +62,12 @@ import {Installer} from './installer'
 
 async function install(installer: Installer): Promise<Installer> {
     return installer.with({
-        fromLibraries:["@youwol/installers-youwol.youwolDev"]
+        fromLibraries:["@youwol/installers"]
     })
 }
 return install
 `
+
     static setInstallerScript({
         tsSrc,
         jsSrc,
@@ -84,6 +85,7 @@ return install
             },
         )
     }
+
     static async tryInstallerScript({ jsSrc }): Promise<Manifest> {
         return new Function(jsSrc)()(new Installer()).then((installer) =>
             installer.resolve(),
