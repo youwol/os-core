@@ -3,7 +3,7 @@ import { RequestsExecutor } from './requests-executor'
 import { Corporation, Environment, Preferences, Widgets } from './environment'
 import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
-import * as cdnClient from '@youwol/cdn-client'
+import * as webpmClient from '@youwol/webpm-client'
 import * as httpClients from '@youwol/http-clients'
 import * as rxjs from 'rxjs'
 import * as rxDOM from '@youwol/rx-vdom'
@@ -38,7 +38,7 @@ export class PreferencesFacade {
     static tryPreferencesScript({ jsSrc }): Promise<Preferences> {
         return new Function(jsSrc)()({
             rxjs,
-            cdnClient,
+            cdnClient: webpmClient,
             httpClients,
             fluxView: rxDOM,
             platformState: ChildApplicationAPI.getOsInstance(),
@@ -64,7 +64,7 @@ export class PreferencesFacade {
                     from(
                         Function(jsSrc)()({
                             rxjs,
-                            cdnClient,
+                            cdnClient: webpmClient,
                             httpClients,
                             fluxView: rxDOM,
                             platformState: ChildApplicationAPI.getOsInstance(),
