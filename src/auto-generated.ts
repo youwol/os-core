@@ -97,13 +97,13 @@ const entries = {
 export const setup = {
     name:'@youwol/os-core',
         assetId:'QHlvdXdvbC9vcy1jb3Jl',
-    version:'0.1.15',
+    version:'0.2.0-wip',
     shortDescription:"Core part of YouWol's Operating System.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/os-core&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/os-core',
     sourceGithub:'https://github.com/youwol/os-core',
     userGuide:'https://l.youwol.com/doc/@youwol/os-core',
-    apiVersion:'01',
+    apiVersion:'02',
     runTimeDependencies,
     externals,
     exportedSymbols,
@@ -128,7 +128,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/os-core_APIv01`]
+            return window[`@youwol/os-core_APIv02`]
         })
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
@@ -143,7 +143,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/os-core#0.1.15~dist/@youwol/os-core/${entry.name}.js`
+            `@youwol/os-core#0.2.0-wip~dist/@youwol/os-core/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
@@ -154,7 +154,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/os-core/${entry.name}_APIv01`]
+            return window[`@youwol/os-core/${entry.name}_APIv02`]
         })
     },
     getCdnDependencies(name?: string){
