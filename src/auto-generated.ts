@@ -1,11 +1,11 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/http-primitives": "^0.1.2",
-        "@youwol/cdn-client": "^2.1.0",
-        "@youwol/http-clients": "^2.0.1",
-        "@youwol/flux-view": "^1.0.3",
-        "rxjs": "^6.5.5",
+        "@youwol/http-primitives": "^0.2.0",
+        "@youwol/webpm-client": "^3.0.0",
+        "@youwol/http-clients": "^3.0.0",
+        "@youwol/rx-vdom": "^1.0.1",
+        "rxjs": "^7.5.6",
         "uuid": "^8.3.2"
     },
     "includedInBundle": {}
@@ -14,27 +14,27 @@ const externals = {
     "@youwol/http-primitives": {
         "commonjs": "@youwol/http-primitives",
         "commonjs2": "@youwol/http-primitives",
-        "root": "@youwol/http-primitives_APIv01"
+        "root": "@youwol/http-primitives_APIv02"
     },
-    "@youwol/cdn-client": {
-        "commonjs": "@youwol/cdn-client",
-        "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv2"
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv3"
     },
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
         "commonjs2": "@youwol/http-clients",
-        "root": "@youwol/http-clients_APIv2"
+        "root": "@youwol/http-clients_APIv3"
     },
-    "@youwol/flux-view": {
-        "commonjs": "@youwol/flux-view",
-        "commonjs2": "@youwol/flux-view",
-        "root": "@youwol/flux-view_APIv1"
+    "@youwol/rx-vdom": {
+        "commonjs": "@youwol/rx-vdom",
+        "commonjs2": "@youwol/rx-vdom",
+        "root": "@youwol/rx-vdom_APIv1"
     },
     "rxjs": {
         "commonjs": "rxjs",
         "commonjs2": "rxjs",
-        "root": "rxjs_APIv6"
+        "root": "rxjs_APIv7"
     },
     "uuid": {
         "commonjs": "uuid",
@@ -45,30 +45,30 @@ const externals = {
         "commonjs": "rxjs/operators",
         "commonjs2": "rxjs/operators",
         "root": [
-            "rxjs_APIv6",
+            "rxjs_APIv7",
             "operators"
         ]
     }
 }
 const exportedSymbols = {
     "@youwol/http-primitives": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/http-primitives"
     },
-    "@youwol/cdn-client": {
-        "apiKey": "2",
-        "exportedSymbol": "@youwol/cdn-client"
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     },
     "@youwol/http-clients": {
-        "apiKey": "2",
+        "apiKey": "3",
         "exportedSymbol": "@youwol/http-clients"
     },
-    "@youwol/flux-view": {
+    "@youwol/rx-vdom": {
         "apiKey": "1",
-        "exportedSymbol": "@youwol/flux-view"
+        "exportedSymbol": "@youwol/rx-vdom"
     },
     "rxjs": {
-        "apiKey": "6",
+        "apiKey": "7",
         "exportedSymbol": "rxjs"
     },
     "uuid": {
@@ -80,9 +80,10 @@ const exportedSymbols = {
 const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
-        "@youwol/cdn-client",
+        "@youwol/http-primitives",
+        "@youwol/webpm-client",
         "@youwol/http-clients",
-        "@youwol/flux-view",
+        "@youwol/rx-vdom",
         "rxjs",
         "uuid"
     ]
