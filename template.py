@@ -16,6 +16,15 @@ folder_path = Path(__file__).parent
 
 pkg_json = parse_json(folder_path / "package.json")
 
+load_dependencies = {
+    "@youwol/http-primitives": "^0.2.0",
+    "@youwol/webpm-client": "^3.0.0",
+    "@youwol/http-clients": "^3.0.0",
+    "@youwol/rx-vdom": "^1.0.1",
+    "rxjs": "^7.5.6",
+    "uuid": "^8.3.2",
+}
+
 template = Template(
     path=folder_path,
     type=PackageType.Library,
@@ -25,27 +34,14 @@ template = Template(
     author=pkg_json["author"],
     dependencies=Dependencies(
         runTime=RunTimeDeps(
-            externals={
-                "@youwol/http-primitives": "^0.1.2",
-                "@youwol/cdn-client": "^2.1.0",
-                "@youwol/http-clients": "^2.0.1",
-                "@youwol/flux-view": "^1.0.3",
-                "rxjs": "^6.5.5",
-                "uuid": "^8.3.2",
-            }
+            externals=load_dependencies
         ),
         devTime={},
     ),
     bundles=Bundles(
         mainModule=MainModule(
             entryFile="./index.ts",
-            loadDependencies=[
-                "@youwol/cdn-client",
-                "@youwol/http-clients",
-                "@youwol/flux-view",
-                "rxjs",
-                "uuid",
-            ],
+            loadDependencies=list(load_dependencies.keys()),
             aliases=["osCore"],
         )
     ),
@@ -66,7 +62,7 @@ for file in [
     ".prettierignore",
     "LICENSE",
     "package.json",
-    "tsconfig.json",
+    # "tsconfig.json", references `rx-vdom-config.ts`
     "webpack.config.ts",
 ]:
     shutil.copyfile(src=folder_path / ".template" / file, dst=folder_path / file)
