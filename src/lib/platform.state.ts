@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM } from '@youwol/rx-vdom'
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs'
 import { filter, map, take, tap } from 'rxjs/operators'
 import { PlatformEvent } from './platform.events'
@@ -52,7 +52,7 @@ export class ChildApplicationAPI {
         )
     }
 
-    static setProperties({ snippet }: { snippet: VirtualDOM }) {
+    static setProperties({ snippet }: { snippet: AnyVirtualDOM }) {
         const os = ChildApplicationAPI.getOsInstance()
         if (!os) {
             return
@@ -180,9 +180,9 @@ export class PlatformState implements IPlatformHandler {
             youwolMenuView,
             userMenuView,
         }: {
-            actionsView: VirtualDOM
-            youwolMenuView: VirtualDOM
-            userMenuView: VirtualDOM
+            actionsView: AnyVirtualDOM
+            youwolMenuView: AnyVirtualDOM
+            userMenuView: AnyVirtualDOM
         },
     ) {
         const app = this.runningApplications$

@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM } from '@youwol/rx-vdom'
 import {
     AssetsBackend,
     AssetsGateway,
@@ -66,10 +66,10 @@ export type TArgs = {
 }
 
 export type Widgets =
-    | VirtualDOM
-    | VirtualDOM[]
-    | ((TArgs) => VirtualDOM[])
-    | ((TArgs) => VirtualDOM)
+    | AnyVirtualDOM
+    | AnyVirtualDOM[]
+    | ((TArgs) => AnyVirtualDOM[])
+    | ((TArgs) => AnyVirtualDOM)
 
 export interface Preferences {
     cssTheme: url
@@ -77,7 +77,7 @@ export interface Preferences {
 }
 
 export interface Corporation {
-    icon: VirtualDOM
+    icon: AnyVirtualDOM
     widgets?: Widgets
 }
 
@@ -87,17 +87,17 @@ export interface TopBanner {
 }
 
 export interface Desktop {
-    backgroundView: VirtualDOM
+    backgroundView: AnyVirtualDOM
     topBanner?: TopBanner
     widgets: Widgets
     /**
      * @deprecated use 'topBanner attribute'
      */
-    topBannerView?: VirtualDOM
+    topBannerView?: AnyVirtualDOM
 }
 
 export interface ContextMenuAction {
-    icon: VirtualDOM
+    icon: AnyVirtualDOM
     name: string
     exe: () => void | Promise<void>
     applicable: () => boolean | Promise<boolean>
@@ -107,7 +107,7 @@ export interface ContextMenuAction {
 export interface AssetPreview {
     icon: string
     name: string
-    exe: () => VirtualDOM | Promise<VirtualDOM>
+    exe: () => AnyVirtualDOM | Promise<AnyVirtualDOM>
     applicable: () => boolean | Promise<boolean>
 }
 
@@ -124,9 +124,9 @@ export interface Application {
     standalone: boolean
     disabled?: boolean
     graphics?: {
-        background?: VirtualDOM
-        iconFile?: VirtualDOM
-        iconApp?: VirtualDOM
+        background?: AnyVirtualDOM
+        iconFile?: AnyVirtualDOM
+        iconApp?: AnyVirtualDOM
     }
 }
 
@@ -191,9 +191,9 @@ export interface ApplicationInfo {
     cdnPackage: string
     displayName: string
     graphics?: {
-        background?: VirtualDOM
-        fileIcon?: VirtualDOM
-        appIcon?: VirtualDOM
+        background?: AnyVirtualDOM
+        fileIcon?: AnyVirtualDOM
+        appIcon?: AnyVirtualDOM
     }
     execution: AppExecutionInfo
 }

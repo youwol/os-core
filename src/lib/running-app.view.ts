@@ -1,4 +1,9 @@
-import { attr$, HTMLElement$, VirtualDOM, child$ } from '@youwol/flux-view'
+import {
+    VirtualDOM,
+    RxHTMLElement,
+    AnyVirtualDOM,
+    ChildrenLike,
+} from '@youwol/rx-vdom'
 import { Observable, ReplaySubject } from 'rxjs'
 import { v4 as uuidv4 } from 'uuid'
 import { AssetsGateway } from '@youwol/http-clients'
@@ -6,16 +11,16 @@ import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { PlatformState } from './platform.state'
 import { ApplicationInfo } from './environment'
 
-class IframeAppView implements VirtualDOM {
-    tag = 'iframe'
-    width = '100%'
-    height = '100%'
-    src: string
+class IframeAppView implements VirtualDOM<'iframe'> {
+    public readonly tag = 'iframe'
+    public readonly width = '100%'
+    public readonly height = '100%'
+    public readonly src: string
     connectedCallback: (HTMLElement$) => void
 
     constructor(src: string, iframe$: ReplaySubject<HTMLIFrameElement>) {
         this.src = src
-        this.connectedCallback = (elem: HTMLElement$ & HTMLIFrameElement) => {
+        this.connectedCallback = (elem: RxHTMLElement<'iframe'>) => {
             iframe$.next(elem)
         }
     }
@@ -40,14 +45,14 @@ export class RunningApp implements Executable {
 
     public readonly iframe$ = new ReplaySubject<HTMLIFrameElement>()
 
-    public readonly view: VirtualDOM
+    public readonly view: AnyVirtualDOM
 
-    public readonly topBannerActions$ = new ReplaySubject<VirtualDOM>(1)
-    public readonly topBannerUserMenu$ = new ReplaySubject<VirtualDOM>(1)
-    public readonly topBannerYouwolMenu$ = new ReplaySubject<VirtualDOM>(1)
+    public readonly topBannerActions$ = new ReplaySubject<AnyVirtualDOM>(1)
+    public readonly topBannerUserMenu$ = new ReplaySubject<AnyVirtualDOM>(1)
+    public readonly topBannerYouwolMenu$ = new ReplaySubject<AnyVirtualDOM>(1)
 
-    public readonly header$ = new ReplaySubject<VirtualDOM>(1)
-    public readonly snippet$ = new ReplaySubject<VirtualDOM>(1)
+    public readonly header$ = new ReplaySubject<AnyVirtualDOM>(1)
+    public readonly snippet$ = new ReplaySubject<AnyVirtualDOM>(1)
 
     htmlElement: HTMLElement
 
@@ -56,7 +61,7 @@ export class RunningApp implements Executable {
         cdnPackage: string
         instanceId?: string
         version: string
-        metadata?: { name: string; icon: VirtualDOM }
+        metadata?: { name: string; icon: AnyVirtualDOM }
         title?: string
         parameters?: { [key: string]: string }
     }) {
@@ -71,6 +76,7 @@ export class RunningApp implements Executable {
             .subscribe((appInfo) => {
                 this.appMetadata$.next(appInfo)
                 this.snippet$.next({
+                    tag: 'div',
                     innerText: appInfo.displayName,
                 })
                 this.header$.next(
@@ -92,7 +98,7 @@ export class RunningApp implements Executable {
         this.view = this.createView()
     }
 
-    setSnippet(snippet: VirtualDOM) {
+    setSnippet(snippet: AnyVirtualDOM) {
         this.snippet$.next(snippet)
     }
 
@@ -102,11 +108,14 @@ export class RunningApp implements Executable {
 
     createView() {
         return {
-            class: attr$(this.state.runningApplication$, (app) =>
-                app && app.instanceId == this.instanceId
-                    ? 'h-100 w-100 d-flex'
-                    : 'd-none',
-            ),
+            tag: 'div' as const,
+            class: {
+                source$: this.state.runningApplication$,
+                vdomMap: (app) =>
+                    app && app.instanceId == this.instanceId
+                        ? 'h-100 w-100 d-flex'
+                        : 'd-none',
+            },
             children: [new IframeAppView(this.url, this.iframe$)],
             connectedCallback: (elem: HTMLElement) => {
                 this.htmlElement = elem
@@ -115,13 +124,19 @@ export class RunningApp implements Executable {
     }
 }
 
-class HeaderView implements VirtualDOM {
+class HeaderView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'px-1 d-flex flex-column'
     public readonly innerText: string
     public readonly title: string
-    public readonly children: VirtualDOM[]
-    constructor(params: { snippet$: Observable<VirtualDOM> }) {
+    public readonly children: ChildrenLike
+    constructor(params: { snippet$: Observable<AnyVirtualDOM> }) {
         Object.assign(this, params)
-        this.children = [child$(params.snippet$, (snippet) => snippet)]
+        this.children = [
+            {
+                source$: params.snippet$,
+                vdomMap: (snippet: AnyVirtualDOM) => snippet,
+            },
+        ]
     }
 }
