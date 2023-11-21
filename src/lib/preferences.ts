@@ -3,15 +3,15 @@ import { RequestsExecutor } from './requests-executor'
 import { Corporation, Environment, Preferences, Widgets } from './environment'
 import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
-import * as cdnClient from '@youwol/cdn-client'
+import * as webpmClient from '@youwol/webpm-client'
 import * as httpClients from '@youwol/http-clients'
 import * as rxjs from 'rxjs'
-import * as fluxView from '@youwol/flux-view'
+import * as rxDOM from '@youwol/rx-vdom'
 import {
     defaultJsSrcSettings,
     defaultTsSrcSettings,
 } from './preferences-default-codes'
-import { VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM } from '@youwol/rx-vdom'
 import { ChildApplicationAPI, PlatformState } from './platform.state'
 
 export class PreferencesFacade {
@@ -38,9 +38,9 @@ export class PreferencesFacade {
     static tryPreferencesScript({ jsSrc }): Promise<Preferences> {
         return new Function(jsSrc)()({
             rxjs,
-            cdnClient,
+            cdnClient: webpmClient,
             httpClients,
-            fluxView,
+            fluxView: rxDOM,
             platformState: ChildApplicationAPI.getOsInstance(),
         })
     }
@@ -64,9 +64,9 @@ export class PreferencesFacade {
                     from(
                         Function(jsSrc)()({
                             rxjs,
-                            cdnClient,
+                            cdnClient: webpmClient,
                             httpClients,
-                            fluxView,
+                            fluxView: rxDOM,
                             platformState: ChildApplicationAPI.getOsInstance(),
                         }),
                     ),
@@ -99,7 +99,7 @@ export class PreferencesFacade {
 function extractWidgets(
     widgets: Widgets,
     args: { platformState: PlatformState },
-): VirtualDOM[] {
+): AnyVirtualDOM[] {
     if (!widgets) {
         return []
     }
@@ -114,7 +114,7 @@ export class PreferencesExtractor {
     static getTopBannerWidgets(
         preferences: Preferences,
         { platformState }: { platformState: PlatformState },
-    ): VirtualDOM[] {
+    ): AnyVirtualDOM[] {
         if (preferences.desktop.topBannerView) {
             return [preferences.desktop.topBannerView]
         }
@@ -126,14 +126,14 @@ export class PreferencesExtractor {
     static getDesktopWidgets(
         preferences: Preferences,
         { platformState }: { platformState: PlatformState },
-    ): VirtualDOM[] {
+    ): AnyVirtualDOM[] {
         return extractWidgets(preferences.desktop?.widgets, { platformState })
     }
 
     static getCorporationWidgets(
         preferences: Preferences,
         { platformState }: { platformState: PlatformState },
-    ): VirtualDOM[] {
+    ): AnyVirtualDOM[] {
         return extractWidgets(
             preferences.desktop?.topBanner?.corporation?.widgets,
             { platformState },

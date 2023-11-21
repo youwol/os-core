@@ -1,5 +1,5 @@
-import { install } from '@youwol/cdn-client'
-import * as cdnClient from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
+import * as webpmClient from '@youwol/webpm-client'
 import { forkJoin, from, Observable, of, ReplaySubject } from 'rxjs'
 import { RequestsExecutor } from './requests-executor'
 import { map, mergeMap, shareReplay, take } from 'rxjs/operators'
@@ -47,7 +47,7 @@ export class Installer {
     public readonly libraryManifests = new Set<string>()
     public readonly generatorManifests = new Set<TInstaller>()
     public readonly resolvedManifests = new Set<Manifest>()
-    public readonly cdnClient = cdnClient
+    public readonly cdnClient = webpmClient
 
     static defaultInstallJsScript = `
 async function install(installer){
