@@ -38,7 +38,7 @@ export const defaultPreferencesContent = `
         )
     }
     const { osWidgets } = await cdnClient.install({
-        modules:['@youwol/os-widgets'],
+        modules:['@youwol/os-widgets#^0.1.2'],
         aliases:{
             'osWidgets':'@youwol/os-widgets'
         }
