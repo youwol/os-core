@@ -93,7 +93,7 @@ export const defaultPreferencesContent = `
 export const defaultTsSrcSettings = `
 import {Preferences} from './environment'
 
-async function preferences({fluxView, cdnClient, httpClients, rxjs, platformState}) : Promise<Preferences> {
+async function preferences({ webpmClient, httpClients,  platformState}) : Promise<Preferences> {
     ${defaultPreferencesContent}
 }
 
@@ -107,7 +107,7 @@ return preferences
 // ---------------------------------------------------------------------------------------------
 
 export const defaultJsSrcSettings = `
-async function preferences({cdnClient, fluxView, httpClients, platformState, rxjs}){
+async function preferences({webpmClient,  httpClients, platformState}){
     ${defaultPreferencesContent}
 }
 
