@@ -32,15 +32,6 @@ export const defaultPreferencesContent = `
     const { osWidgets, rxjs} = await webpmClient.install({
         modules:['@youwol/os-widgets#^0.2.1 as osWidgets' , 'rxjs#^7.5.6 as rxjs' ],
     })
-    
-    const topBannerViewDefault = {
-        tag:'div',
-        class:'text-center',
-        innerText: {
-            source$: rxjs.timer(0,1000),
-            vdomMap: () => new Date().toLocaleString()
-        }
-    }
 
     const favorites = await osWidgets.favoritesWidget()
     return {
