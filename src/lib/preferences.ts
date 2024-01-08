@@ -5,8 +5,6 @@ import { from, of, ReplaySubject } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
 import * as webpmClient from '@youwol/webpm-client'
 import * as httpClients from '@youwol/http-clients'
-import * as rxjs from 'rxjs'
-import * as rxDOM from '@youwol/rx-vdom'
 import {
     defaultJsSrcSettings,
     defaultTsSrcSettings,
@@ -37,10 +35,8 @@ export class PreferencesFacade {
 
     static tryPreferencesScript({ jsSrc }): Promise<Preferences> {
         return new Function(jsSrc)()({
-            rxjs,
-            cdnClient: webpmClient,
+            webpmClient,
             httpClients,
-            fluxView: rxDOM,
             platformState: ChildApplicationAPI.getOsInstance(),
         })
     }
@@ -63,10 +59,8 @@ export class PreferencesFacade {
                 mergeMap(({ jsSrc }) =>
                     from(
                         Function(jsSrc)()({
-                            rxjs,
-                            cdnClient: webpmClient,
+                            webpmClient,
                             httpClients,
-                            fluxView: rxDOM,
                             platformState: ChildApplicationAPI.getOsInstance(),
                         }),
                     ),

@@ -29,26 +29,20 @@ const ywLogo = `
 // ---------------------------------------------------------------------------------------------
 
 export const defaultPreferencesContent = `
-    
-    const topBannerViewDefault = {
-        class:'text-center',
-        innerText: fluxView.attr$(
-            rxjs.timer(0,1000),
-            () => new Date().toLocaleString()
-        )
-    }
-    const { osWidgets } = await cdnClient.install({
-        modules:['@youwol/os-widgets'],
-        aliases:{
-            'osWidgets':'@youwol/os-widgets'
-        }
+    const { osWidgets, rxjs } = await webpmClient.install({
+        modules: [
+            '@youwol/os-widgets#^0.2.1 as osWidgets',
+            'rxjs#^7.5.6 as rxjs',
+        ]
     })
+
     const favorites = await osWidgets.favoritesWidget()
     return {
         cssTheme: 'coming soon',
         desktop:{
             // This defines the background
             backgroundView: {
+                tag:'div',
                 class: "h-100 w-100",
                 style:{
                     backgroundColor: "#ffffff"
@@ -65,19 +59,19 @@ export const defaultPreferencesContent = `
                     },
                     widgets:[{
                     class:'text-center my-auto',
-                    innerText: fluxView.attr$(
-                        rxjs.timer(0,1000),
-                        () => new Date().toLocaleString()
-                    )
+                    innerText: {
+                            source$: rxjs.timer(0,1000),
+                            vdomMap: () => new Date().toLocaleString()
+                        }
                 }]
                 },
                 // Custom widgets of the top-banner, here a timer displaying the current date
                 widgets: [{
                     class:'text-center my-auto',
-                    innerText: fluxView.attr$(
-                        rxjs.timer(0,1000),
-                        () => new Date().toLocaleString()
-                    )
+                    innerText: {
+                            source$: rxjs.timer(0,1000),
+                            vdomMap: () => new Date().toLocaleString()
+                        }
                 }],
             },           
             // Desktop's widgets
@@ -93,7 +87,7 @@ export const defaultPreferencesContent = `
 export const defaultTsSrcSettings = `
 import {Preferences} from './environment'
 
-async function preferences({fluxView, cdnClient, httpClients, rxjs, platformState}) : Promise<Preferences> {
+async function preferences({ webpmClient, httpClients,  platformState}) : Promise<Preferences> {
     ${defaultPreferencesContent}
 }
 
@@ -107,7 +101,7 @@ return preferences
 // ---------------------------------------------------------------------------------------------
 
 export const defaultJsSrcSettings = `
-async function preferences({cdnClient, fluxView, httpClients, platformState, rxjs}){
+async function preferences({webpmClient,  httpClients, platformState}){
     ${defaultPreferencesContent}
 }
 
