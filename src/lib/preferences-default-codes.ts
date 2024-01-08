@@ -29,8 +29,11 @@ const ywLogo = `
 // ---------------------------------------------------------------------------------------------
 
 export const defaultPreferencesContent = `
-    const { osWidgets, rxjs} = await webpmClient.install({
-        modules:['@youwol/os-widgets#^0.2.1 as osWidgets' , 'rxjs#^7.5.6 as rxjs' ],
+    const { osWidgets, rxjs } = await webpmClient.install({
+        modules: [
+            '@youwol/os-widgets#^0.2.1 as osWidgets',
+            'rxjs#^7.5.6 as rxjs',
+        ]
     })
 
     const favorites = await osWidgets.favoritesWidget()
