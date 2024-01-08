@@ -1178,9 +1178,9 @@
     eslint-plugin-unused-imports "^3.0.0"
 
 "@youwol/http-clients@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-3.0.0.tgz#13c1f72666a1402c45f559cde0117e37d5ced192"
-  integrity sha512-QQq/dzAklzgSHjhbPPyVH0xmIyJ/5eORfp+F0JkLOfNQfU4qr0cFzfl2Ss+1oYjOLPJQKphsGvYD6fZmHOe9mA==
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-3.0.1.tgz#b1ea113d7ce0c1addd9795b61c8c4b2c3ea81cb0"
+  integrity sha512-HyBhKE9lMDb5VweF9+jzA9F3Bnd+nNq9a970yJPwWAW28oM4Csebv0vlPhPIj4IgwXKzP5AZh4lTccAICIoDsQ==
   dependencies:
     "@youwol/http-primitives" "^0.2.0"
     rxjs "^7.5.6"
