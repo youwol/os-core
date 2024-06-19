@@ -1,45 +1,40 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/http-primitives": "^0.2.0",
-        "@youwol/webpm-client": "^3.0.0",
         "@youwol/http-clients": "^3.0.0",
+        "@youwol/http-primitives": "^0.2.0",
         "@youwol/rx-vdom": "^1.0.1",
+        "@youwol/webpm-client": "^3.0.0",
         "rxjs": "^7.5.6",
         "uuid": "^8.3.2"
     },
     "includedInBundle": {}
 }
 const externals = {
-    "@youwol/http-primitives": {
-        "commonjs": "@youwol/http-primitives",
-        "commonjs2": "@youwol/http-primitives",
-        "root": "@youwol/http-primitives_APIv02"
-    },
-    "@youwol/webpm-client": {
-        "commonjs": "@youwol/webpm-client",
-        "commonjs2": "@youwol/webpm-client",
-        "root": "@youwol/webpm-client_APIv3"
-    },
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
         "commonjs2": "@youwol/http-clients",
         "root": "@youwol/http-clients_APIv3"
+    },
+    "@youwol/http-primitives": {
+        "commonjs": "@youwol/http-primitives",
+        "commonjs2": "@youwol/http-primitives",
+        "root": "@youwol/http-primitives_APIv02"
     },
     "@youwol/rx-vdom": {
         "commonjs": "@youwol/rx-vdom",
         "commonjs2": "@youwol/rx-vdom",
         "root": "@youwol/rx-vdom_APIv1"
     },
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv3"
+    },
     "rxjs": {
         "commonjs": "rxjs",
         "commonjs2": "rxjs",
         "root": "rxjs_APIv7"
-    },
-    "uuid": {
-        "commonjs": "uuid",
-        "commonjs2": "uuid",
-        "root": "uuid_APIv8"
     },
     "rxjs/operators": {
         "commonjs": "rxjs/operators",
@@ -48,24 +43,29 @@ const externals = {
             "rxjs_APIv7",
             "operators"
         ]
+    },
+    "uuid": {
+        "commonjs": "uuid",
+        "commonjs2": "uuid",
+        "root": "uuid_APIv8"
     }
 }
 const exportedSymbols = {
-    "@youwol/http-primitives": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/http-primitives"
-    },
-    "@youwol/webpm-client": {
-        "apiKey": "3",
-        "exportedSymbol": "@youwol/webpm-client"
-    },
     "@youwol/http-clients": {
         "apiKey": "3",
         "exportedSymbol": "@youwol/http-clients"
     },
+    "@youwol/http-primitives": {
+        "apiKey": "02",
+        "exportedSymbol": "@youwol/http-primitives"
+    },
     "@youwol/rx-vdom": {
         "apiKey": "1",
         "exportedSymbol": "@youwol/rx-vdom"
+    },
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     },
     "rxjs": {
         "apiKey": "7",
